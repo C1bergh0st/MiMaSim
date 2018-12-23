@@ -38,7 +38,7 @@ public class Steuerwerk {
         shouldHalt = false;
         lastExecutedAdress = 0;
         lastChange = 0;
-        akku.setValue(0b111111111111111111111111);
+        /*akku.setValue(0b111111111111111111111111);
         speicher.setMem(0,0b000000000000000000001111);
         speicher.setMem(1,0b000100000000000000000000);
         speicher.setMem(2,0b101100000000000000000000);
@@ -49,7 +49,7 @@ public class Steuerwerk {
         speicher.setMem(7,0b110100000000000000000000);
         speicher.setMem(8,0b100100000000000000000001);
         speicher.setMem(9,0b111100000000000000000000);
-        speicher.setMem(10,0b000000000000000000100000);
+        speicher.setMem(10,0b000000000000000000100000);*/
     }
 
     public void stepTill(int maxsteps){

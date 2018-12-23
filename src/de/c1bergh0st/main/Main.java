@@ -12,8 +12,6 @@ import java.awt.*;
 public class Main {
 
     public static void main(String[] args) {
-        Steuerwerk mima = new Steuerwerk();
-
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -24,6 +22,5 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(1000,600));
         frame.setVisible(true);
-
     }
 }
