@@ -1,16 +1,6 @@
 package de.c1bergh0st.gui;
 
-import java.awt.Component;
-
-import java.awt.Dimension;
-
-import java.awt.Graphics;
-
-import java.awt.Graphics2D;
-
-import java.awt.Rectangle;
-
-import java.awt.RenderingHints;
+import java.awt.*;
 
 import javax.swing.JComponent;
 
@@ -106,6 +96,7 @@ public class LineNumberComponent extends JComponent {
     
     @Override
     public void paintComponent(Graphics g) {
+        g.setFont(new Font("Monospace", Font.PLAIN, 14));
         super.paintComponent(g);
         if (lineNumberModel == null) {
             return;
@@ -132,7 +123,7 @@ public class LineNumberComponent extends JComponent {
             default:// left alignment, do nothing
                 break;
             }
-            g2d.drawString(String.valueOf(i), xPosition, yPosition);
+            g2d.drawString(String.valueOf(i), xPosition-6, yPosition);
         }
     }
     

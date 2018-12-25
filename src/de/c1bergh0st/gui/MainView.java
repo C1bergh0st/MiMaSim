@@ -2,18 +2,16 @@ package de.c1bergh0st.gui;
 
 import de.c1bergh0st.visual.HelpWindow;
 
-import java.awt.Dimension;
+import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import java.awt.Panel;
-import java.awt.Rectangle;
-import java.awt.FlowLayout;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
-import java.awt.ScrollPane;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -24,6 +22,7 @@ public class MainView extends JPanel {
     public JTextPane editor;
     public InputController contr;
     public JSplitPane splitPane;
+    public StyledDocument styledDoc;
     /**
      * Create the panel.
      */
@@ -115,6 +114,9 @@ public class MainView extends JPanel {
         mimaPane.setLayout(sl_mimaPane);
 
         editor = new JTextPane();
+        editor.setFont(new Font("Monospaced",Font.PLAIN,14));
+
+        styledDoc = editor.getStyledDocument();
         splitPane.setLeftComponent(new CEditor(editor));
     }
 }

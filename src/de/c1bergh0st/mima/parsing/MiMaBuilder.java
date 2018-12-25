@@ -15,7 +15,8 @@ public class MiMaBuilder {
     private static final String MARKER = "([a-z]*:)";
     private static final String COMMANDS_WITH_ARGS = "(LDC|LDV|STV|ADD|AND|OR|XOR|EQL|JMP|JMN|LDIV|STIV)";
     private static final String COMMANDS_NO_ARGS = "(RAR|NOT|HALT|SKIP)";
-    private static final String VARIABLEDECLARATION = "^var[A-Z]{5,}=[0-9]*$";
+    private static final String VALIDVARIABLENAME = "([A-Z]{3,})";
+    private static final String VARIABLEDECLARATION = "^var("+ VALIDVARIABLENAME +")=[0-9]+$";
 
 
     public MiMaBuilder() {
@@ -139,7 +140,7 @@ public class MiMaBuilder {
         String cleanLine;
         for (int i = 0; i < lines.length; i++) {
             cleanLine = lines[i].replaceAll(" ", "");
-            if (!cleanLine.matches("^([a-z]*:)?((" + COMMANDS_WITH_ARGS + "[0-9]+)|" + COMMANDS_NO_ARGS + ")(\\/\\/.*)?$") && !cleanLine.matches(VARIABLEDECLARATION)) {
+            if (!cleanLine.matches("^(([a-z]+:)?)(" + COMMANDS_WITH_ARGS + "([0-9]+|[a-z]+|[A-Z]+)|" + COMMANDS_NO_ARGS + ")(\\/\\/.*)?$") && !cleanLine.matches(VARIABLEDECLARATION)) {
                 throw new MiMaSyntaxException("Line: " + i);
             }
         }

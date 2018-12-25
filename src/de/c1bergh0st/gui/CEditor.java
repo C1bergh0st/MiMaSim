@@ -45,7 +45,13 @@ public class CEditor extends JScrollPane{
             }
         });
         
-        this.textPane.setText("ADD 2\nmarker:NOT\nHALT");
+        this.textPane.setText("var ONE = 20\n" +
+                "LDC 1\n" +
+                "STV ONE\n" +
+                "LDC 0\n" +
+                "add: ADD ONE\n" +
+                "JMP add\n" +
+                "HALT");
         
     }
 
@@ -59,7 +65,11 @@ public class CEditor extends JScrollPane{
             try {
                 int offset = totalCharacters;
                 while (offset > 0) {
-                    offset = Utilities.getRowStart(textPane, offset) - 1;
+                    try{
+                        offset = Utilities.getRowStart(textPane, offset) - 1;
+                    } catch (NullPointerException e){
+                        System.out.println("Mysterious Error in CEditor");
+                    }
                     lineCount++;
                 }
             } catch (BadLocationException e) {

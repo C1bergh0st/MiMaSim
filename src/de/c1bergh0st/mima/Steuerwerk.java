@@ -230,7 +230,7 @@ public class Steuerwerk {
 
         execInstr(opByte);
         if(shouldHalt){
-
+            DialogUtil.showDialogToUser("MiMa Halt","A HALT Statement has been reached!");
         }
         Debug.send("Akku:"+akku.getValue());
     }
