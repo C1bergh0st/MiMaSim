@@ -38,6 +38,12 @@ public class DataConverter {
      * @return A Code Representation
      */
     public static String getBinary(int value, int length){
-        return "";
+        String result = "";
+        int temp = value;
+        for(int i = 0; i < length; i++){
+            result = (temp % 2) + result;
+            temp = temp / 2;
+        }
+        return result;
     }
 }

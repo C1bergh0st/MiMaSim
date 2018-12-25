@@ -66,7 +66,6 @@ public class VisualRegister extends JPanel {
             Debug.sendErr("Wrong type in VisualRegister",1);
         }
         String binary = DataConverter.getBinary(i,24);
-        binary = binary.substring(binary.length()-register.getSize());
         this.binary.setText(" "+binary);
     }
 }
