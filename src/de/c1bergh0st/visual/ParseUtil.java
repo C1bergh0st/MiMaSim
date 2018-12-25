@@ -1,6 +1,4 @@
 //Copyright (C) 2018  Philipp Berdesinski
-// A MiMa Simulator with GUI
-// The Copyright outlined in the File LICENSE applies
 package de.c1bergh0st.visual;
 
 import de.c1bergh0st.debug.Debug;
@@ -14,35 +12,6 @@ public class ParseUtil {
 
     //A List of possible Commands
     public static final String[] commands = {"LDC", "LDV", "STV", "ADD", "AND", "OR", "XOR", "EQL", "JMP", "JMN", "LDIV", "STIV", "RAR", "NOT", "EMPTY", "HALT"};
-
-
-    /**
-     *
-     * @param binaryString A String to Test
-     * @return Wheter the String only contains 1's and 0's and is max 24 'bits' long
-     */
-    public static boolean validBinary(String binaryString){
-        String trimmedString = binaryString.replaceAll("\\s","");
-        while(trimmedString.length() < 24){
-            trimmedString = "0" + trimmedString;
-        }
-
-        return trimmedString.matches("^([1,0]{24})$");
-    }
-
-
-    /**
-     * @param commandString Command
-     * @return Whether the given commandString is valid
-     */
-    public static boolean validCommand(String commandString){
-        String s = commandString.replaceAll("\\s","");
-        if(s.matches("^(((LDC|LDV|STV|ADD|AND|OR|XOR|EQL|JMP|JMN|LDIV|STIV)[0-9]+)|(RAR|NOT|EMPTY|HALT))$")){
-            return true;
-        }
-        Debug.send("Regex didnt match: "+s);
-        return false;
-    }
 
 
     /**
@@ -70,7 +39,6 @@ public class ParseUtil {
      * @param command A Command that should contain a possible Command
      * @return An Integer with the OpCode of the given Command String => see ParseUtil.commands
      */
-    @SuppressWarnings("ConstantConditions")
     public static int getOpCode(String command){
         int i = 0;
 
@@ -87,11 +55,12 @@ public class ParseUtil {
         return i;
     }
 
-    /**
+    /**Returns a 24bit binary representation of the Given Integer
+     * Any bits outside the 24bit area will be lost
+     *
      * @param i Integer
      * @return A Full Binary String Representation with leading zeros.
      */
-
     public static String toBinaryString(int i){
         //Create a String from the 24 bit Value of i
         String s = Integer.toBinaryString(mask24(i));
@@ -102,6 +71,11 @@ public class ParseUtil {
         return s;
     }
 
+    /**Converts from a signed Binary String (e.g.: 0101000001010000010100001111) to an Integer representation
+     *
+     * @param binary String in signed binary form with 24 bits
+     * @return Integer representation of the binary String
+     */
     public static int getDisplayValue(String binary){
         if(binary.length() == 24){
             if(binary.charAt(0) == '0'){
@@ -112,23 +86,8 @@ public class ParseUtil {
         return -1;
     }
 
-    public static int getDisplayValue(int i, boolean adress){
-        if(!adress){
-            if(i >= 0 && i <= Steuerwerk.MAX_VALUE){
-                if(i < 0b100000000000000000000000){
-                    return i;
-                }
-                return (-1) * (0b011111111111111111111111-(i % 0b100000000000000000000000) + 1);
-            }
-        } else{//20 Bit Adresses
-            if(i >= 0 && i <= Steuerwerk.MAX_ADRESS){
-                return i;
-            }
-        }
-        return -1;
-    }
 
-    /**
+    /**Masks an integer to be in Range of the MiMa Value format
      * @param i Integer
      * @return Returns an int with it's highest byte set to zero
      */
@@ -137,7 +96,7 @@ public class ParseUtil {
     }
 
 
-    /**
+    /**Masks an integer to be in Range of the MiMa Adress format
      * @param i Integer
      * @return Returns an int with it's highest 12 bits set to zero
      */

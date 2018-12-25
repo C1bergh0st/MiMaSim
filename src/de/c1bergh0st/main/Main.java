@@ -3,7 +3,9 @@
 // The Copyright outlined in the File LICENSE applies
 package de.c1bergh0st.main;
 
+import de.c1bergh0st.gui.InputController;
 import de.c1bergh0st.gui.MainView;
+import de.c1bergh0st.gui.ViewController;
 import de.c1bergh0st.mima.Steuerwerk;
 
 import javax.swing.*;
@@ -18,7 +20,10 @@ public class Main {
             //Bad Habit but no one cares if this fails its just E S T H E T I C S
         }
         JFrame frame = new JFrame("MiMa_II");
-        frame.add(new MainView());
+        ViewController viewController = new ViewController();
+        MainView view = new MainView(new InputController(viewController));
+        frame.add(view);
+        viewController.setMainView(view);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(1000,600));
         frame.setVisible(true);

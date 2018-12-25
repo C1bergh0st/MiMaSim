@@ -8,6 +8,12 @@ import de.c1bergh0st.visual.DialogUtil;
 import de.c1bergh0st.visual.ParseUtil;
 
 public class Steuerwerk {
+
+    //extCommandSet as specified here: http://ti.ira.uka.de/Visualisierungen/Mima/mima-aufgaben.pdf
+    public static final String[] commandSet = {"LDC","LDV","STV","ADD","AND","OR","XOR","EQL","JMP","JMN","LDIV","STIV","SKIP","SKIP","SKIP"};
+    public static final String[] extCommandSet = {"HALT","NOT","RAR"};
+
+
     public static final int MAX_ADRESS = 1048575;
     public static final int MAX_VALUE = 16777215;
 

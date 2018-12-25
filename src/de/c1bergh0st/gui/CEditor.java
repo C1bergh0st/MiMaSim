@@ -52,7 +52,7 @@ public class CEditor extends JScrollPane{
             }
         });
         
-        this.textArea.setText("This is a demonstration of...\n...line numbering using a JText area within...\n...a JScrollPane");
+        this.textArea.setText("ADD 2\nmarker:NOT\nHALT");
         
     }
 

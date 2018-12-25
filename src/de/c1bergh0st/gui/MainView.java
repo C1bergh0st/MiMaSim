@@ -1,5 +1,7 @@
 package de.c1bergh0st.gui;
 
+import de.c1bergh0st.visual.HelpWindow;
+
 import java.awt.Dimension;
 
 import javax.swing.JMenuBar;
@@ -20,22 +22,27 @@ import javax.swing.JTextArea;
 
 import java.awt.ScrollPane;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JSpinner;
 import javax.swing.JLabel;
 import javax.swing.SpinnerNumberModel;
 
 public class MainView extends JPanel {
+    public JButton buildBtn;
+    public JButton disposeBtn;
     public JButton restoreBtn;
     public JButton lockBtn;
     public JButton stepBtn;
     public JButton runBtn;
     public JSpinner offsetSpinner;
     public JTextArea editor;
-    
+    public InputController contr;
     /**
      * Create the panel.
      */
-    public MainView() {
+    public MainView(InputController contr) {
+        this.contr = contr;
         this.setPreferredSize(new Dimension(1000, 600));
         SpringLayout springLayout = new SpringLayout();
         setLayout(springLayout);
@@ -65,6 +72,11 @@ public class MainView extends JPanel {
         mnHelp.add(mntmMiMaDoc);
 
         JMenuItem mntmAbout = new JMenuItem("About");
+        mntmAbout.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                HelpWindow w = new HelpWindow();
+            }
+        });
         mnHelp.add(mntmAbout);
 
         Panel bottomBar = new Panel();
@@ -82,17 +94,58 @@ public class MainView extends JPanel {
         offsetSpinner .setModel(new SpinnerNumberModel(0, 0, 1048575, 1));
         bottomBar.add(offsetSpinner );
 
+        buildBtn = new JButton("Build");
+        buildBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                contr.build();
+            }
+        });
+        bottomBar.add(buildBtn);
+
+        disposeBtn = new JButton("Dispose");
+        disposeBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                contr.dispose();
+            }
+        });
+        bottomBar.add(disposeBtn);
+        disposeBtn.setEnabled(false);
+
         lockBtn = new JButton("Lock");
+        lockBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                contr.lock();
+            }
+        });
         bottomBar.add(lockBtn);
+        lockBtn.setEnabled(false);
 
         restoreBtn = new JButton("Restore");
+        restoreBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                contr.restore();
+            }
+        });
         bottomBar.add(restoreBtn);
+        restoreBtn.setEnabled(false);
 
         stepBtn = new JButton("Step");
+        stepBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                contr.step();
+            }
+        });
         bottomBar.add(stepBtn);
+        stepBtn.setEnabled(false);
 
         runBtn = new JButton("Run");
+        runBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                contr.run();
+            }
+        });
         bottomBar.add(runBtn);
+        runBtn.setEnabled(false);
 
         JSplitPane splitPane = new JSplitPane();
         splitPane.setResizeWeight(0.5);
