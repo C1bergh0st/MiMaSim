@@ -1,10 +1,12 @@
 package de.c1bergh0st.gui;
 
 import de.c1bergh0st.mima.Steuerwerk;
+import de.c1bergh0st.mima.executing.visual.MiMaPanel;
 import de.c1bergh0st.mima.parsing.MiMaBuilder;
 import de.c1bergh0st.mima.parsing.MiMaParsingException;
 import de.c1bergh0st.mima.parsing.MiMaSyntaxException;
 
+import javax.swing.*;
 import javax.swing.text.View;
 
 public class InputController {
@@ -30,13 +32,11 @@ public class InputController {
             return;
         }
         //enable lock, step, run, dispose
-        viewContr.setLockEnabled(true);
-        viewContr.setRunEnabled(true);
-        viewContr.setStepEnabled(true);
         viewContr.setDisposeEnabled(true);
         //disable editor, build
         viewContr.setEditorEnabled(false);
         viewContr.setBuildEnabled(false);
+        viewContr.setRightPanel(new MiMaPanel(currentMiMa));
     }
 
     public void dispose(){
@@ -46,33 +46,7 @@ public class InputController {
         viewContr.setEditorEnabled(true);
         viewContr.setBuildEnabled(true);
         //disable dispose, lock, step, run, restore
-        viewContr.setLockEnabled(false);
-        viewContr.setRunEnabled(false);
-        viewContr.setStepEnabled(false);
         viewContr.setDisposeEnabled(false);
-        viewContr.setRestoreEnabled(false);
+        viewContr.setRightPanel(new JPanel());
     }
-
-    public void step() {
-        lock();
-        //disable: run
-    }
-    
-    public void run() {
-        lock();
-        //disable step
-        //run
-    }
-    
-    public void lock() {
-        //lock code with offset
-        //disable lock
-        //enable restore
-    }
-    
-    public void restore() {
-        //disable restore enable lock
-        //enable run, step
-    }
-    
 }

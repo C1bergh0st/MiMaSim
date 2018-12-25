@@ -18,6 +18,9 @@ public class RegisterView extends JPanel {
     public RegisterView(Steuerwerk mima){
         this.mima = mima;
         this.setLayout(new FlowLayout(FlowLayout.LEADING));
+        this.setPreferredSize(new Dimension(200,1000));
+        this.setMaximumSize(new Dimension(200,1000));
+
         akku = new VisualRegister(mima.getAkku(),"Akku",VisualRegister.FULLVALUE);
         add(akku);
         iar = new VisualRegister(mima.getIAR(),"IAR (Next step)",VisualRegister.ADRESS);

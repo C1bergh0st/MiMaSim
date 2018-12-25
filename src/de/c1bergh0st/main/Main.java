@@ -25,7 +25,7 @@ public class Main {
         frame.add(view);
         viewController.setMainView(view);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(new Dimension(1000,600));
+        frame.setSize(new Dimension(1600,900));
         frame.setVisible(true);
     }
 }

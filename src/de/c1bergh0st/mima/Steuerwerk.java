@@ -138,20 +138,77 @@ public class Steuerwerk {
             case 11: //STIV
                 stiv();
                 break;
-            case 12: //RAR
-                rar();
+            case 12: //SKIP
+
                 break;
-            case 13: //NOT
-                not();
+            case 13: //SKIP
+
                 break;
             case 14: //EMPTY
 
                 break;
-            case 15: //HALT
-                halt();
+            case 15: //EXTCODE
+                execExtInstr();
                 break;
             default: //EMPTY
                 Debug.sendErr("INSTRUCTION > 0B1111",2);
+                break;
+        }
+    }
+
+    private void execExtInstr(){
+        byte nextByte = (byte)(ir.getMaskedValue()>>>16);
+        switch (nextByte){
+            case 0:
+                halt();
+                break;
+            case 1:
+                not();
+                break;
+            case 2:
+                rar();
+                break;
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+            case 5:
+
+                break;
+            case 6:
+
+                break;
+            case 7:
+
+                break;
+            case 8:
+
+                break;
+            case 9:
+
+                break;
+            case 10:
+
+                break;
+            case 11:
+
+                break;
+            case 12:
+
+                break;
+            case 13:
+
+                break;
+            case 14:
+
+                break;
+            case 15:
+
+                break;
+            default:
+                Debug.sendErr("Internal Error in Extended opCode Execution in Steuerwerk",0);
                 break;
         }
     }
@@ -172,7 +229,9 @@ public class Steuerwerk {
         iar.setValue(iar.getValue()+1);
 
         execInstr(opByte);
+        if(shouldHalt){
 
+        }
         Debug.send("Akku:"+akku.getValue());
     }
 

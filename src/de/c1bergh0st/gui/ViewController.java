@@ -17,6 +17,11 @@ public class ViewController {
     public void setEditorText(String s) {
         //mainView.editor.setText(s);
     }
+
+    public void setRightPanel(JComponent input){
+        mainView.splitPane.setRightComponent(input);
+        mainView.splitPane.setDividerLocation(mainView.splitPane.getWidth()-800);
+    }
     
     public String getEditorText() {
        return mainView.editor.getText();
@@ -40,22 +45,7 @@ public class ViewController {
             mainView.editor.setBackground(Colors.EDITOR_DISABLED);
         }
     }
-    
-    public void setRestoreEnabled(boolean enabled) {
-        mainView.restoreBtn.setEnabled(enabled);
-    }
-    
-    public void setLockEnabled(boolean enabled) {
-        mainView.lockBtn.setEnabled(enabled);
-    }
-    
-    public void setStepEnabled(boolean enabled) {
-        mainView.stepBtn.setEnabled(enabled);
-    }
-    
-    public void setRunEnabled(boolean enabled) {
-        mainView.runBtn.setEnabled(enabled);
-    }
+
 
     public void setDisposeEnabled(boolean enabled){
         mainView.disposeBtn.setEnabled(enabled);

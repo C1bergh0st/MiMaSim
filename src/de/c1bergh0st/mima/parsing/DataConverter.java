@@ -1,5 +1,7 @@
 package de.c1bergh0st.mima.parsing;
 
+import de.c1bergh0st.visual.ParseUtil;
+
 /**
  * Implements converting to the 4 Data Types Used in the MiMa Runtime Visualization
  * Data Types:
@@ -20,7 +22,14 @@ public class DataConverter {
      * @return A String Representation
      */
     public static String getSignRepr(int value){
-        return "";
+        value = ParseUtil.mask24(value);
+        int wert;
+        if(value / 0b100000000000000000000000 == 0){
+            wert = value % 0b100000000000000000000000;
+        }else{
+            wert = -0b100000000000000000000000 + (value % 0b100000000000000000000000);
+        }
+        return Integer.toString(wert);
     }
 
     /**

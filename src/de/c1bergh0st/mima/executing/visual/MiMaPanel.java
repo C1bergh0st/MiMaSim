@@ -13,10 +13,16 @@ public class MiMaPanel extends JPanel {
         MemoryEditor memEdit = new MemoryEditor(mima.getSpeicher(),mima);
         RegisterView regView = new RegisterView(mima);
 
+
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(800,600));
-        add(memEdit.getPanel(), BorderLayout.WEST);
-        add(regView, BorderLayout.CENTER);
+        setPreferredSize(new Dimension(600,600));
+        setMaximumSize(new Dimension(600,2000));
+        JSplitPane split = new JSplitPane();
+        split.setLeftComponent(memEdit.getPanel());
+        split.setRightComponent(regView);
+        //add(memEdit.getPanel(), BorderLayout.WEST);
+        //add(regView, BorderLayout.EAST);
+        add(split, BorderLayout.WEST);
         add(new BottomBar(mima, memEdit, regView), BorderLayout.PAGE_END);
 
 

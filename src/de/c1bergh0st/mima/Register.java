@@ -54,8 +54,12 @@ public class Register {
         if(!readOnly){
             if(v < 0) {
                 Debug.sendErr("Value " + v + " not Supported by Register", 2);
+            } else if (size == 20) {
+                value = v & 0b000011111111111111111111;
+
             } else {
                 value = v & 0b111111111111111111111111;
+
             }
         } else {
             Debug.sendErr("The Register is READ-ONLY");

@@ -4,6 +4,7 @@
 package de.c1bergh0st.mima;
 
 import de.c1bergh0st.debug.Debug;
+import de.c1bergh0st.visual.ParseUtil;
 
 public class Speicher {
     Register sdr, sar;

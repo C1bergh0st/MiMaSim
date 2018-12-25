@@ -24,7 +24,7 @@ public class BottomBar extends JPanel {
         this.setLayout(new FlowLayout());
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
-        oneStep = new JButton("One Step");
+        oneStep = new JButton("Step");
         oneStep.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mima.step();

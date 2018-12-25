@@ -4,40 +4,26 @@ import de.c1bergh0st.visual.HelpWindow;
 
 import java.awt.Dimension;
 
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import java.awt.Panel;
 import java.awt.Rectangle;
 import java.awt.FlowLayout;
-import javax.swing.JButton;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 
 import java.awt.ScrollPane;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JSpinner;
-import javax.swing.JLabel;
-import javax.swing.SpinnerNumberModel;
 
 public class MainView extends JPanel {
     public JButton buildBtn;
     public JButton disposeBtn;
-    public JButton restoreBtn;
-    public JButton lockBtn;
-    public JButton stepBtn;
-    public JButton runBtn;
     public JSpinner offsetSpinner;
-    public JTextArea editor;
+    public JTextPane editor;
     public InputController contr;
+    public JSplitPane splitPane;
     /**
      * Create the panel.
      */
@@ -111,43 +97,9 @@ public class MainView extends JPanel {
         bottomBar.add(disposeBtn);
         disposeBtn.setEnabled(false);
 
-        lockBtn = new JButton("Lock");
-        lockBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                contr.lock();
-            }
-        });
-        bottomBar.add(lockBtn);
-        lockBtn.setEnabled(false);
 
-        restoreBtn = new JButton("Restore");
-        restoreBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                contr.restore();
-            }
-        });
-        bottomBar.add(restoreBtn);
-        restoreBtn.setEnabled(false);
 
-        stepBtn = new JButton("Step");
-        stepBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                contr.step();
-            }
-        });
-        bottomBar.add(stepBtn);
-        stepBtn.setEnabled(false);
-
-        runBtn = new JButton("Run");
-        runBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                contr.run();
-            }
-        });
-        bottomBar.add(runBtn);
-        runBtn.setEnabled(false);
-
-        JSplitPane splitPane = new JSplitPane();
+        splitPane = new JSplitPane();
         splitPane.setResizeWeight(0.5);
         springLayout.putConstraint(SpringLayout.NORTH, splitPane, 6, SpringLayout.SOUTH, menuBar);
         springLayout.putConstraint(SpringLayout.WEST, splitPane, 0, SpringLayout.WEST, this);
@@ -162,7 +114,7 @@ public class MainView extends JPanel {
         SpringLayout sl_mimaPane = new SpringLayout();
         mimaPane.setLayout(sl_mimaPane);
 
-        editor = new JTextArea();
+        editor = new JTextPane();
         splitPane.setLeftComponent(new CEditor(editor));
     }
 }

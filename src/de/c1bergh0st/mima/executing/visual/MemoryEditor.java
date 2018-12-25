@@ -40,6 +40,7 @@ public class MemoryEditor{
         }
         model = new CustomTableModel(data, cols);
         table = new JTable(model);
+        table.setEnabled(false);
         listener = new TableListener(table,speicher);
         model.addTableModelListener(listener);
 

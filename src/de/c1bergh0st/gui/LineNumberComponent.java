@@ -68,7 +68,7 @@ public class LineNumberComponent extends JComponent {
     }
 
     public void adjustWidth() {
-        int max = lineNumberModel.getNumberLines();
+        int max = 1000;
         if (getGraphics() == null) {
             return;
         }
