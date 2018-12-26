@@ -141,7 +141,7 @@ public class MiMaBuilder {
         for (int i = 0; i < lines.length; i++) {
             cleanLine = lines[i].replaceAll(" ", "");
             if (!cleanLine.matches("^(([a-z]+:)?)(" + COMMANDS_WITH_ARGS + "([0-9]+|[a-z]+|[A-Z]+)|" + COMMANDS_NO_ARGS + ")(\\/\\/.*)?$") && !cleanLine.matches(VARIABLEDECLARATION)) {
-                throw new MiMaSyntaxException("Line: " + i);
+                throw new MiMaSyntaxException("Line: " + i + "\n No Prefixes of Commands as Variable names");
             }
         }
     }

@@ -76,6 +76,19 @@ public class Steuerwerk {
         }
     }
 
+    public void reset(){
+        resetAdress();
+        akku.setValue(0);
+        sdr.setValue(0);
+        sar.setValue(0);
+        ir.setValue(0);
+        x.setValue(0);
+        y.setValue(0);
+        z.setValue(0);
+        speicher.loadLockedState();
+        shouldHalt = false;
+    }
+
     public void resetAdress(){
         iar.setValue(0);
         lastExecutedAdress = 0;
@@ -231,6 +244,7 @@ public class Steuerwerk {
         execInstr(opByte);
         if(shouldHalt){
             DialogUtil.showDialogToUser("MiMa Halt","A HALT Statement has been reached!");
+            shouldHalt = false;
         }
         Debug.send("Akku:"+akku.getValue());
     }

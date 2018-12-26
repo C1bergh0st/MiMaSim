@@ -12,6 +12,7 @@ import java.awt.event.*;
 public class BottomBar extends JPanel {
     private final JButton oneStep;
     private final JButton start;
+    private final JButton reset;
     private final Steuerwerk mima;
     private final MemoryEditor memEdit;
     private final RegisterView registerView;
@@ -37,7 +38,7 @@ public class BottomBar extends JPanel {
         start = new JButton("Start");
         start.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mima.getSpeicher().lockCurrState();
+                mima.reset();
                 memEdit.revalidate();
                 mima.stepTill(0xFFFFFFF);
                 memEdit.revalidate();
@@ -45,6 +46,17 @@ public class BottomBar extends JPanel {
             }
         } );
         add(start);
+
+        reset = new JButton("Reset");
+        reset.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mima.reset();
+                memEdit.revalidate();
+                registerView.refresh();
+            }
+        } );
+        add(reset);
+        mima.getSpeicher().lockCurrState();
     }
 
 }

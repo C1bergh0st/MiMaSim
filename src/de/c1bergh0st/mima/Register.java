@@ -43,7 +43,7 @@ public class Register {
 
     public boolean getFirstBit(){
         if(size == 24){
-            return value >= 0b011111111111111111111111;
+            return value > 0b011111111111111111111111;
         } else {
             Debug.sendErr("Not Allowed");
             return false;
