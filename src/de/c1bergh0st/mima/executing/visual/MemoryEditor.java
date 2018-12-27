@@ -66,7 +66,7 @@ public class MemoryEditor{
                 } else if(row == mima.getLastAdress()){
                     setBackground(Color.ORANGE);
                 } else if(row == mima.getLastChange()){
-                    setBackground(Color.BLUE.brighter());
+                    setBackground(new Color(150,150,255));
                 } else {
                     setBackground(Color.WHITE);
                 }

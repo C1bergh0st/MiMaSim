@@ -17,45 +17,34 @@ public class Steuerwerk {
     public static final int MAX_ADRESS = 1048575;
     public static final int MAX_VALUE = 16777215;
 
-    private Register akku;
-    private Register sar, sdr;
+    private RegisterMaster registers;
     private Speicher speicher;
-    private Register iar, ir;
-    private Register eins;
     private ALU alu;
-    private Register x, y, z;
-    public boolean shouldHalt;
-    int lastExecutedAdress;
-    int lastChange;
+    private boolean shouldHalt;
+    public int lastExecutedAdress;
+    public int lastChange;
 
 
     public Steuerwerk(){
-        eins = new Register(true,1,24);
-        akku = new Register();
-        sar = new Register(false, 0, 20);
-        sdr = new Register();
-        speicher = new Speicher(sdr,sar);
-        iar = new Register(false, 0, 20);
-        ir = new Register();
-        x = new Register();
-        y = new Register();
-        z = new Register();
-        alu = new ALU(x,y,z);
+        registers = new RegisterMaster();
+        registers.addRegister("eins", new Register(true,1,24));
+        registers.addRegister("akku",new Register());
+        registers.addRegister("sar",new Register(false, 0, 20));
+        registers.addRegister("sdr",new Register());
+        speicher = new Speicher(registers.get("sdr"),registers.get("sar"));
+        registers.addRegister("iar", new Register(false, 0, 20));
+        registers.addRegister("ir",new Register());
+        registers.addRegister("x", new Register());
+        registers.addRegister("y", new Register());
+        registers.addRegister("z", new Register());
+        alu = new ALU(registers.get("x"),registers.get("y"),registers.get("z"));
         shouldHalt = false;
         lastExecutedAdress = 0;
         lastChange = 0;
-        /*akku.setValue(0b111111111111111111111111);
-        speicher.setMem(0,0b000000000000000000001111);
-        speicher.setMem(1,0b000100000000000000000000);
-        speicher.setMem(2,0b101100000000000000000000);
-        speicher.setMem(3,0b000000000000000000000001);
-        speicher.setMem(4,0b001100000000000000000000);
-        speicher.setMem(5,0b001000000000000000000000);
-        speicher.setMem(6,0b011100000000000000001010);
-        speicher.setMem(7,0b110100000000000000000000);
-        speicher.setMem(8,0b100100000000000000000001);
-        speicher.setMem(9,0b111100000000000000000000);
-        speicher.setMem(10,0b000000000000000000100000);*/
+
+
+        //akku.setValue(0b111111111111111111111111);
+        //speicher.setMem(0,0b000000000000000000001111);
     }
 
     public void stepTill(int maxsteps){
@@ -78,36 +67,36 @@ public class Steuerwerk {
 
     public void reset(){
         resetAdress();
-        akku.setValue(0);
-        sdr.setValue(0);
-        sar.setValue(0);
-        ir.setValue(0);
-        x.setValue(0);
-        y.setValue(0);
-        z.setValue(0);
+        registers.get("akku").setValue(0);
+        registers.get("sdr").setValue(0);
+        registers.get("sar").setValue(0);
+        registers.get("ir").setValue(0);
+        registers.get("x").setValue(0);
+        registers.get("y").setValue(0);
+        registers.get("z").setValue(0);
         speicher.loadLockedState();
         shouldHalt = false;
     }
 
     public void resetAdress(){
-        iar.setValue(0);
+        registers.get("iar").setValue(0);
         lastExecutedAdress = 0;
         lastChange = 0;
     }
 
     public void lightstep(){
-        lastExecutedAdress = iar.getValue();
+        lastExecutedAdress = registers.get("iar").getValue();
         //load the next instruction from memory into the ir
-        sar.setValue(iar.getValue());
+        registers.get("sar").setValue(registers.get("iar").getValue());
         speicher.updateSDR();
-        ir.setValue(sdr.getValue());
+        registers.get("ir").setValue(registers.get("sdr").getValue());
 
         //get the OpCode
-        byte opCode = ir.getCommand();
+        byte opCode = registers.get("ir").getCommand();
 
         //increment the iar by one
         //TODO: use ALU
-        iar.setValue(iar.getValue()+1);
+        registers.get("iar").setValue(registers.get("iar").getValue()+1);
 
         execInstr(opCode);
 
@@ -170,7 +159,7 @@ public class Steuerwerk {
     }
 
     private void execExtInstr(){
-        byte nextByte = (byte)(ir.getMaskedValue()>>>16);
+        byte nextByte = (byte)(registers.get("ir").getMaskedValue()>>>16);
         switch (nextByte){
             case 0:
                 halt();
@@ -227,171 +216,171 @@ public class Steuerwerk {
     }
 
     public void step(){
-        lastExecutedAdress = iar.getValue();
+        lastExecutedAdress = registers.get("iar").getValue();
         //load the next instruction from memory into the ir
-        sar.setValue(iar.getValue());
+        registers.get("sar").setValue(registers.get("iar").getValue());
         speicher.updateSDR();
-        ir.setValue(sdr.getValue());
+        registers.get("ir").setValue(registers.get("sdr").getValue());
 
         //get the OpCode
-        int opCode = ir.getValue();
-        byte opByte = ir.getCommand();
-        Debug.send(iar.getValue()+" : "+ ParseUtil.code(opCode));
+        int opCode = registers.get("ir").getValue();
+        byte opByte = registers.get("ir").getCommand();
+        Debug.send(registers.get("iar").getValue()+" : "+ ParseUtil.code(opCode));
         //increment the iar by one
         //TODO: use ALU
-        iar.setValue(iar.getValue()+1);
+        registers.get("iar").setValue(registers.get("iar").getValue()+1);
 
         execInstr(opByte);
         if(shouldHalt){
             DialogUtil.showDialogToUser("MiMa Halt","A HALT Statement has been reached!");
             shouldHalt = false;
         }
-        Debug.send("Akku:"+akku.getValue());
+        Debug.send("Akku:"+registers.get("akku").getValue());
     }
 
     private void ldc(){
         //load the value of the ir without the command halfbyte into the akku
-        akku.setValue(ir.getMaskedValue());
+        registers.get("akku").setValue(registers.get("ir").getMaskedValue());
     }
 
     private void ldv(){
         //write into the sar
-        sar.setValue(ir.getMaskedValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
         //tell the memory to update the sdr
         speicher.updateSDR();
         //save the sdr value in the akku
-        akku.setValue(sdr.getValue());
+        registers.get("akku").setValue(registers.get("sdr").getValue());
     }
 
     private void stv(){
-        sar.setValue(ir.getMaskedValue());
-        sdr.setValue(akku.getValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
+        registers.get("sdr").setValue(registers.get("akku").getValue());
         speicher.write();
-        lastChange = sar.getValue();
+        lastChange = registers.get("sar").getValue();
     }
 
     private void add(){
         //load the value at <ir> into the sdr
-        sar.setValue(ir.getMaskedValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
         speicher.updateSDR();
         //save the value of the sdr into y
-        y.setValue(sdr.getValue());
+        registers.get("y").setValue(registers.get("sdr").getValue());
         //save the value of the akku into x
-        x.setValue(akku.getValue());
+        registers.get("x").setValue(registers.get("akku").getValue());
         //let the alu add the two together
         alu.add();
         //save the output into the akku
-        akku.setValue(z.getValue());
+        registers.get("akku").setValue(registers.get("z").getValue());
 
     }
 
     private void and(){
         //get the value at <ir>
-        sar.setValue(ir.getMaskedValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
         speicher.updateSDR();
         //save <sdr> into y
-        y.setValue(sdr.getValue());
+        registers.get("y").setValue(registers.get("sdr").getValue());
         //get <akku> into x
-        x.setValue(akku.getValue());
+        registers.get("x").setValue(registers.get("akku").getValue());
         //tell the alu to and
         alu.and();
         //save the output in the akku
-        akku.setValue(z.getValue());
+        registers.get("akku").setValue(registers.get("z").getValue());
     }
 
     private void or(){
         //get the value at <ir>
-        sar.setValue(ir.getMaskedValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
         speicher.updateSDR();
         //save <sdr> into y
-        y.setValue(sdr.getValue());
+        registers.get("y").setValue(registers.get("sdr").getValue());
         //get <akku> into x
-        x.setValue(akku.getValue());
+        registers.get("x").setValue(registers.get("akku").getValue());
         //tell the alu to or
         alu.or();
         //save the output in the akku
-        akku.setValue(z.getValue());
+        registers.get("akku").setValue(registers.get("z").getValue());
     }
 
     private void xor(){
         //get the value at <ir>
-        sar.setValue(ir.getMaskedValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
         speicher.updateSDR();
         //save <sdr> into y
-        y.setValue(sdr.getValue());
+        registers.get("y").setValue(registers.get("sdr").getValue());
         //get <akku> into x
-        x.setValue(akku.getValue());
+        registers.get("x").setValue(registers.get("akku").getValue());
         //tell the alu to xor
         alu.xor();
         //save the output in the akku
-        akku.setValue(z.getValue());
+        registers.get("akku").setValue(registers.get("z").getValue());
     }
 
     private void eql(){
         //get the value at <ir>
-        sar.setValue(ir.getMaskedValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
         speicher.updateSDR();
         //save <sdr> into y
-        y.setValue(sdr.getValue());
+        registers.get("y").setValue(registers.get("sdr").getValue());
         //get <akku> into x
-        x.setValue(akku.getValue());
+        registers.get("x").setValue(registers.get("akku").getValue());
         //tell the alu to compare
         alu.eql();
         //save the output in the akku
-        akku.setValue(z.getValue());
+        registers.get("akku").setValue(registers.get("z").getValue());
     }
 
     private void jmp(){
-        iar.setValue(ir.getMaskedValue());
+        registers.get("iar").setValue(registers.get("ir").getMaskedValue());
     }
 
     private void jmn(){
         //if the first bit is negative we jump
-        if(akku.getFirstBit()){
+        if(registers.get("akku").getFirstBit()){
             jmp();
         }
     }
 
     private void ldiv(){
         //get <ir> into the sdr
-        sar.setValue(ir.getMaskedValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
         speicher.updateSDR();
         //get <<ir>> into the sdr
-        sar.setValue(sdr.getMaskedValue());
+        registers.get("sar").setValue(registers.get("sdr").getMaskedValue());
         speicher.updateSDR();
         //save the value of <<ir>> in the akku
-        akku.setValue(sdr.getValue());
+        registers.get("akku").setValue(registers.get("sdr").getValue());
     }
 
     private void stiv(){
         //get <ir>
-        sar.setValue(ir.getMaskedValue());
+        registers.get("sar").setValue(registers.get("ir").getMaskedValue());
         speicher.updateSDR();
         //save <<ir>> in the sar
-        sar.setValue(sdr.getValue());
+        registers.get("sar").setValue(registers.get("sdr").getValue());
         //save <akku> in the sdr
-        sdr.setValue(akku.getValue());
+        registers.get("sdr").setValue(registers.get("akku").getValue());
         //save <akku> at <<ir>>
         speicher.write();
-        lastChange = sar.getValue();
+        lastChange = registers.get("sar").getValue();
     }
 
     private void rar(){
         //get <akku> into x
-        x.setValue(akku.getValue());
+        registers.get("x").setValue(registers.get("akku").getValue());
         //tell the alu to rotate right (and not loose the lost bit)
         alu.rar();
         //save the output in the akku
-        akku.setValue(z.getValue());
+        registers.get("akku").setValue(registers.get("z").getValue());
     }
 
     private void not(){
         //get <akku> into x
-        x.setValue(akku.getValue());
+        registers.get("x").setValue(registers.get("akku").getValue());
         //tell the alu to invert
         alu.not();
         //save the output in the akku
-        akku.setValue(z.getValue());
+        registers.get("akku").setValue(registers.get("z").getValue());
     }
 
     private void halt(){
@@ -404,19 +393,19 @@ public class Steuerwerk {
     }
 
     public Register getAkku(){
-        return akku;
+        return registers.get("akku");
     }
 
     public Register getIAR() {
-        return iar;
+        return registers.get("iar");
     }
 
     public Register getIR() {
-        return ir;
+        return registers.get("ir");
     }
 
     public int getNextAdress(){
-        return iar.getValue();
+        return registers.get("iar").getValue();
     }
     public int getLastAdress(){
         return lastExecutedAdress;
