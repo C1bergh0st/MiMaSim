@@ -1,5 +1,6 @@
 package de.c1bergh0st.mima.instructions;
 
+import de.c1bergh0st.debug.Debug;
 import de.c1bergh0st.mima.RegisterMaster;
 import de.c1bergh0st.mima.Speicher;
 import de.c1bergh0st.mima.Steuerwerk;
@@ -14,6 +15,7 @@ public class InstructionMaster {
     public InstructionMaster(){
         instructions = new Instruction[15];
         extendedInstructions = new Instruction[16];
+        fillInstructionSet();
     }
 
     public Instruction getInstr(int command){
@@ -32,6 +34,7 @@ public class InstructionMaster {
         } else {
             internalAdd(instr);
         }
+        Debug.sendErr("Added Instruction: " + instr);
     }
 
     private void internalAddExt(Instruction instr){
@@ -49,4 +52,33 @@ public class InstructionMaster {
             instructions[instr.getOpCode()] = instr;
         }
     }
+
+    private void fillInstructionSet(){
+        for(byte i = 0; i < instructions.length; i++){
+            instructions[i] = new SKIP(i,false);
+            extendedInstructions[i] = new SKIP(i,true);
+        }
+        extendedInstructions[15] = new SKIP((byte)15,true);
+    }
+
+    public void printCommmandSet(){
+        Debug.sendRaw(this.toString());
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        for(Instruction instr : instructions){
+            sb.append(instr.toString());
+            sb.append("\n");
+        }
+        for(Instruction instr : extendedInstructions){
+            sb.append(instr.toString());
+            sb.append("\n");
+        }
+        sb.delete(sb.lastIndexOf("\n"),sb.length());
+        return sb.toString();
+    }
+
+
 }
+

@@ -4,6 +4,8 @@
 package de.c1bergh0st.mima;
 
 import de.c1bergh0st.debug.Debug;
+import de.c1bergh0st.mima.instructions.InstructionMaster;
+import de.c1bergh0st.mima.instructions.LDC;
 import de.c1bergh0st.visual.DialogUtil;
 import de.c1bergh0st.visual.ParseUtil;
 
@@ -18,6 +20,7 @@ public class Steuerwerk {
     public static final int MAX_VALUE = 16777215;
 
     private RegisterMaster registers;
+    private InstructionMaster instructions;
     private Speicher speicher;
     private ALU alu;
     private boolean shouldHalt;
@@ -37,6 +40,8 @@ public class Steuerwerk {
         registers.addRegister("x", new Register());
         registers.addRegister("y", new Register());
         registers.addRegister("z", new Register());
+        instructions = new InstructionMaster();
+        instructions.add(new LDC());
         alu = new ALU(registers.get("x"),registers.get("y"),registers.get("z"));
         shouldHalt = false;
         lastExecutedAdress = 0;
@@ -103,9 +108,11 @@ public class Steuerwerk {
     }
 
     private void execInstr(byte b){
+        int command = registers.getValue("ir");
         switch (b){
             case 0: //LDC
-                ldc();
+                //ldc();
+                instructions.getInstr(command).exec(registers, speicher,this, command);
                 break;
             case 1: //LDV
                 ldv();

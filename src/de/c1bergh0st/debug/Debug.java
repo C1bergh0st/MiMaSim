@@ -3,6 +3,10 @@
 // The Copyright outlined in the File LICENSE applies
 package de.c1bergh0st.debug;
 
+/**
+ * This Class solely exists to "funel" all calls to the System.out.println method
+ * and to organize logging in some way for future uses
+ */
 public class Debug {
 
     /**
@@ -33,9 +37,19 @@ public class Debug {
     }
 
     /**
-     * @param message Send a notification
+     * @param message a message to be shown on Console
      */
     public static void send(String message){
         System.out.println("Notice :"+message);
     }
+
+    /**
+     *
+     * @param message a String to be shown on Console
+     */
+    public static void sendRaw(String message){
+        System.out.println(message);
+    }
+
+
 }
