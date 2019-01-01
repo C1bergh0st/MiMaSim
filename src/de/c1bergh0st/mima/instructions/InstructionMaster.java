@@ -18,6 +18,24 @@ public class InstructionMaster {
         fillInstructionSet();
     }
 
+    public void loadMiMa(){
+        add(new LDC());
+        add(new LDV());
+        add(new STV());
+        add(new ADD());
+        add(new AND());
+        add(new OR());
+        add(new XOR());
+        add(new EQL());
+        add(new JMP());
+        add(new JMN());
+        add(new LDIV());
+        add(new STIV());
+        add(new HALT());
+        add(new NOT());
+        add(new RAR());
+    }
+
     public Instruction getInstr(int command){
         byte opCode = (byte)(ParseUtil.mask24(command)>>>20);
         if(opCode == 15){
@@ -34,7 +52,7 @@ public class InstructionMaster {
         } else {
             internalAdd(instr);
         }
-        Debug.sendErr("Added Instruction: " + instr);
+        Debug.sendRaw("Added Instruction: " + instr);
     }
 
     private void internalAddExt(Instruction instr){

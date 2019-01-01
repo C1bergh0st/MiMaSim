@@ -45,13 +45,15 @@ public class CEditor extends JScrollPane{
             }
         });
         
-        this.textPane.setText("var ONE = 20\n" +
-                "LDC 1\n" +
-                "STV ONE\n" +
+        this.textPane.setText("var MINUSONE = 20 //Simple Programm to check some but not all Commands\n" +
                 "LDC 0\n" +
-                "add: ADD ONE\n" +
-                "JMP add\n" +
-                "HALT");
+                "NOT\n" +
+                "STV MINUSONE\n" +
+                "LDC 10\n" +
+                "loop: JMN end\n" +
+                "ADD MINUSONE\n" +
+                "JMP loop\n" +
+                "end: HALT");
         
     }
 

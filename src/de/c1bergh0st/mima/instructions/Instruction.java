@@ -7,6 +7,8 @@ import de.c1bergh0st.mima.parsing.DataConverter;
 
 public abstract class Instruction {
 
+    private static final String FOUR_BIT_PADDING = " ----";
+
     protected final String simpleCode;
     protected final String regex;
     protected final boolean takesArgs;
@@ -52,19 +54,19 @@ public abstract class Instruction {
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("[Name: ");
-        sb.append(simpleCode);
-        sb.append(" | Signature:");
+        sb.append(String.format("%-5s",simpleCode));
+        sb.append(" | Signature: ");
         if(exOpCode){
             sb.append("1111 ");
             sb.append(DataConverter.getBinary(opCode,4));
         } else{
             sb.append(DataConverter.getBinary(opCode,4));
-            sb.append(" xxxx");
+            sb.append(FOUR_BIT_PADDING);
         }
-        sb.append(" xxxx");
-        sb.append(" xxxx");
-        sb.append(" xxxx");
-        sb.append(" xxxx");
+        sb.append(FOUR_BIT_PADDING);
+        sb.append(FOUR_BIT_PADDING);
+        sb.append(FOUR_BIT_PADDING);
+        sb.append(FOUR_BIT_PADDING);
         sb.append("]");
         return sb.toString();
     }

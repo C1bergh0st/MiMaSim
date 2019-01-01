@@ -16,7 +16,7 @@ public class MiMaBuilder {
     private static final String COMMANDS_WITH_ARGS = "(LDC|LDV|STV|ADD|AND|OR|XOR|EQL|JMP|JMN|LDIV|STIV)";
     private static final String COMMANDS_NO_ARGS = "(RAR|NOT|HALT|SKIP)";
     private static final String VALIDVARIABLENAME = "([A-Z]{3,})";
-    private static final String VARIABLEDECLARATION = "^var("+ VALIDVARIABLENAME +")=[0-9]+$";
+    private static final String VARIABLEDECLARATION = "^var("+ VALIDVARIABLENAME +")=[0-9]+(\\/\\/.*)?$";
 
 
     public MiMaBuilder() {
@@ -36,7 +36,7 @@ public class MiMaBuilder {
         //checks each line to match the format
         validateSyntax(lines);
         //Parses the Code into Direct Instructions
-        String[] parsedLines = attemptParse(lines);
+        String[] parsedLines = attemptParse(lines, offset);
         //Parses the Direct Instructions into ByteCode:
         int[] byteCode = generateByteCode(parsedLines);
 
@@ -146,7 +146,7 @@ public class MiMaBuilder {
         }
     }
 
-    public String[] attemptParse(String[] linesIn) throws MiMaParsingException {
+    public String[] attemptParse(String[] linesIn, int offset) throws MiMaParsingException {
         //a map mapping a marker to its line number
         HashMap<String, Integer> markermap = new HashMap<String, Integer>();
         String[] lines = new String[linesIn.length];
@@ -193,7 +193,7 @@ public class MiMaBuilder {
                     throw new MiMaParsingException("Multiple Markers at Line: " + i);
                 } else {
                     //mapping the marker to its line
-                    markermap.put(marker, i);
+                    markermap.put(marker, i + offset);
                     //deleting the marker from the source code
                     lines[i] = line.substring(line.indexOf(":") + 1);
                 }
