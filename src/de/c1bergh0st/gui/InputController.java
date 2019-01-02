@@ -2,6 +2,7 @@ package de.c1bergh0st.gui;
 
 import de.c1bergh0st.mima.Steuerwerk;
 import de.c1bergh0st.mima.executing.visual.MiMaPanel;
+import de.c1bergh0st.mima.instructions.InstructionMaster;
 import de.c1bergh0st.mima.parsing.MiMaBuilder;
 import de.c1bergh0st.mima.parsing.MiMaParsingException;
 import de.c1bergh0st.mima.parsing.MiMaSyntaxException;
@@ -17,7 +18,9 @@ public class InputController {
     
     public InputController(ViewController viewContr) {
         this.viewContr = viewContr;
-        this.builder = new MiMaBuilder();
+        InstructionMaster instructionMaster = new InstructionMaster();
+        instructionMaster.loadMiMa();
+        this.builder = new MiMaBuilder(instructionMaster);
     }
     
     public void build(){

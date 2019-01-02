@@ -1,26 +1,24 @@
 package de.c1bergh0st.mima.parsing;
 
-import de.c1bergh0st.mima.Speicher;
 import de.c1bergh0st.mima.Steuerwerk;
+import de.c1bergh0st.mima.instructions.InstructionMaster;
 import de.c1bergh0st.visual.DialogUtil;
 import de.c1bergh0st.visual.ParseUtil;
 
 import java.util.HashMap;
 
 public class MiMaBuilder {
-    //Example Lines: ? = optional
-    // Format: (marker:)?command(value)?
-    //OR var NAME =
-    Steuerwerk mima;
     private static final String MARKER = "([a-z]*:)";
     private static final String COMMANDS_WITH_ARGS = "(LDC|LDV|STV|ADD|AND|OR|XOR|EQL|JMP|JMN|LDIV|STIV)";
     private static final String COMMANDS_NO_ARGS = "(RAR|NOT|HALT|SKIP)";
     private static final String VALIDVARIABLENAME = "([A-Z]{3,})";
     private static final String VARIABLEDECLARATION = "^var("+ VALIDVARIABLENAME +")=[0-9]+(\\/\\/.*)?$";
+    private Steuerwerk mima;
+    private InstructionMaster instructionMaster;
 
 
-    public MiMaBuilder() {
-
+    public MiMaBuilder(InstructionMaster instructionMaster) {
+        this.instructionMaster = instructionMaster;
     }
 
     public Steuerwerk createFromCode(String code, int offset) throws MiMaSyntaxException, MiMaParsingException {
@@ -34,7 +32,7 @@ public class MiMaBuilder {
         }
 
         //checks each line to match the format
-        validateSyntax(lines);
+        validateSyntaxFull(lines);
         //Parses the Code into Direct Instructions
         String[] parsedLines = attemptParse(lines, offset);
         //Parses the Direct Instructions into ByteCode:
@@ -45,7 +43,7 @@ public class MiMaBuilder {
             mem[offset+i] = byteCode[i];
         }
 
-        mima = new Steuerwerk();
+        mima = new Steuerwerk(instructionMaster);
         mima.getSpeicher().setMem(mem);
         return mima;
     }
@@ -134,16 +132,54 @@ public class MiMaBuilder {
      * Example of a malformed line: marker ADD /comment
      *
      * @param lines An Array of Instructions
-     * @throws MiMaSyntaxException
+     * @throws MiMaSyntaxException is thrown if a Line does not conform to the syntax
      */
-    private void validateSyntax(String[] lines) throws MiMaSyntaxException {
-        String cleanLine;
+    private void validateSyntaxFull(String[] lines) throws MiMaSyntaxException {
         for (int i = 0; i < lines.length; i++) {
-            cleanLine = lines[i].replaceAll(" ", "");
-            if (!cleanLine.matches("^(([a-z]+:)?)(" + COMMANDS_WITH_ARGS + "([0-9]+|[a-z]+|[A-Z]+)|" + COMMANDS_NO_ARGS + ")(\\/\\/.*)?$") && !cleanLine.matches(VARIABLEDECLARATION)) {
-                throw new MiMaSyntaxException("Line: " + i + "\n No Prefixes of Commands as Variable names");
-            }
+            validateSyntax(lines[i], i);
         }
+    }
+
+    /**
+     * Validates a single Line of MiMa high level code
+     * @param line The Line which should be checked
+     * @throws MiMaSyntaxException is thrown if the line is invalid
+     */
+    public void validateSyntax(String line, int lineNumber) throws MiMaSyntaxException {
+        String VARIABLEDECLARATION = "^var [a-zA-Z]+ = [0-9]+(, ?[0-9]+)?$";
+        //1.Remove Comment from the String
+        //2.1. Variable Decleration         x
+        //2.2. Statement                    v
+        //2.2.1 Marker:Command              v
+        //2.2.2 Command                     v
+        //Command                           v
+        //1. CommandNoArg                   x
+        //2. CommandArg                     v
+        //2.1 CommandArg var                x
+        //2.1 CommandArg marker             x
+        //2.1 CommandArg number             x
+        //Comment = (//.*)
+        //Marker = ([a-zA-Z]+: ?)
+        String normalized = line.replaceAll("  ", " ");
+
+        String commentFree = ParsingTools.removeComment(normalized);
+        //if the commentFreeLine still contains an /, the syntax is violated
+        if(commentFree.contains("/")){
+            throw new MiMaSyntaxException("Stray / Appeared on Line: " + lineNumber + ".");
+        }
+
+        //if the line is a valid variable declaration we can return if there is no overlap with Commands
+        if(commentFree.matches(VARIABLEDECLARATION)){
+            String marker = ParsingTools.extractVarFromDef(commentFree);
+            for(String command: instructionMaster.getCommandList()){
+                if(marker.matches("^"+command+"$")){
+                    throw new MiMaSyntaxException("Keyword Collision on Line: " + lineNumber + ". Dont use Keywords as variables!");
+                }
+            }
+            return;
+        }
+
+
     }
 
     public String[] attemptParse(String[] linesIn, int offset) throws MiMaParsingException {
@@ -159,7 +195,7 @@ public class MiMaBuilder {
 
         //Deleting Comments and whitespaces
         for (int i = 0; i < lines.length; i++) {
-            lines[i] = lines[i].replaceAll("\\/\\/.*$", "");
+            lines[i] = lines[i].replaceAll("//.*$", "");
             lines[i] = lines[i].replaceAll(" ", "");
         }
 

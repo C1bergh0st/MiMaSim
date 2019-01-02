@@ -7,6 +7,7 @@ import de.c1bergh0st.mima.Steuerwerk;
 import de.c1bergh0st.visual.ParseUtil;
 
 import java.net.PasswordAuthentication;
+import java.util.LinkedList;
 
 public class InstructionMaster {
     private Instruction[] instructions;
@@ -53,6 +54,24 @@ public class InstructionMaster {
             internalAdd(instr);
         }
         Debug.sendRaw("Added Instruction: " + instr);
+    }
+
+    public LinkedList<String> getCommandList(){
+        LinkedList<String> result = new LinkedList<String>();
+        String regex;
+        for(Instruction i : instructions){
+            regex = i.getRegex();
+            if(!result.contains(regex)){
+                result.add(i.getRegex());
+            }
+        }
+        for(Instruction i : extendedInstructions){
+            regex = i.getRegex();
+            if(!result.contains(regex)){
+                result.add(i.getRegex());
+            }
+        }
+        return result;
     }
 
     private void internalAddExt(Instruction instr){

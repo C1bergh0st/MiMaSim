@@ -28,7 +28,7 @@ public class Steuerwerk {
     public int lastChange;
 
 
-    public Steuerwerk(){
+    public Steuerwerk(InstructionMaster instructions){
         registers = new RegisterMaster();
         registers.addRegister("eins", new Register(true,1,24));
         registers.addRegister("akku",new Register());
@@ -40,8 +40,7 @@ public class Steuerwerk {
         registers.addRegister("x", new Register());
         registers.addRegister("y", new Register());
         registers.addRegister("z", new Register());
-        instructions = new InstructionMaster();
-        instructions.loadMiMa();
+        this.instructions = instructions;
         alu = new ALU(registers.get("x"),registers.get("y"),registers.get("z"));
         shouldHalt = false;
         lastExecutedAdress = 0;
