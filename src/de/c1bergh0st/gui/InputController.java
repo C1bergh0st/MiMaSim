@@ -29,9 +29,11 @@ public class InputController {
             currentMiMa = builder.createFromCode(viewContr.getEditorText(),viewContr.getOffset());
         } catch (MiMaSyntaxException e) {
             viewContr.showException(e);
+            e.printStackTrace();
             return;
         } catch (MiMaParsingException e) {
             viewContr.showException(e);
+            e.printStackTrace();
             return;
         }
         //enable lock, step, run, dispose

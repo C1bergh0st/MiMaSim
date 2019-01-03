@@ -1,5 +1,6 @@
 package de.c1bergh0st.mima.parsing;
 
+import de.c1bergh0st.debug.Debug;
 import de.c1bergh0st.mima.Steuerwerk;
 import de.c1bergh0st.mima.instructions.InstructionMaster;
 import de.c1bergh0st.visual.DialogUtil;
@@ -11,8 +12,7 @@ public class MiMaBuilder {
     private static final String MARKER = "([a-z]*:)";
     private static final String COMMANDS_WITH_ARGS = "(LDC|LDV|STV|ADD|AND|OR|XOR|EQL|JMP|JMN|LDIV|STIV)";
     private static final String COMMANDS_NO_ARGS = "(RAR|NOT|HALT|SKIP)";
-    private static final String VALIDVARIABLENAME = "([A-Z]{3,})";
-    private static final String VARIABLEDECLARATION = "^var("+ VALIDVARIABLENAME +")=[0-9]+(\\/\\/.*)?$";
+    private static final String VARIABLEDECLARATION = "^var [a-zA-Z]+ = [0-9]+(, ?[0-9]+)?$";
     private Steuerwerk mima;
     private InstructionMaster instructionMaster;
 
@@ -146,23 +146,17 @@ public class MiMaBuilder {
      * @throws MiMaSyntaxException is thrown if the line is invalid
      */
     public void validateSyntax(String line, int lineNumber) throws MiMaSyntaxException {
-        String VARIABLEDECLARATION = "^var [a-zA-Z]+ = [0-9]+(, ?[0-9]+)?$";
         //1.Remove Comment from the String
-        //2.1. Variable Decleration         x
+        //2.1. Variable Decleration         x   done
         //2.2. Statement                    v
         //2.2.1 Marker:Command              v
         //2.2.2 Command                     v
         //Command                           v
         //1. CommandNoArg                   x
-        //2. CommandArg                     v
-        //2.1 CommandArg var                x
-        //2.1 CommandArg marker             x
-        //2.1 CommandArg number             x
         //Comment = (//.*)
         //Marker = ([a-zA-Z]+: ?)
-        String normalized = line.replaceAll("  ", " ");
 
-        String commentFree = ParsingTools.removeComment(normalized);
+        String commentFree = ParsingTools.removeComment(line.replaceAll(" +", " ")).trim();
         //if the commentFreeLine still contains an /, the syntax is violated
         if(commentFree.contains("/")){
             throw new MiMaSyntaxException("Stray / Appeared on Line: " + lineNumber + ".");
@@ -170,16 +164,67 @@ public class MiMaBuilder {
 
         //if the line is a valid variable declaration we can return if there is no overlap with Commands
         if(commentFree.matches(VARIABLEDECLARATION)){
-            String marker = ParsingTools.extractVarFromDef(commentFree);
-            for(String command: instructionMaster.getCommandList()){
-                if(marker.matches("^"+command+"$")){
-                    throw new MiMaSyntaxException("Keyword Collision on Line: " + lineNumber + ". Dont use Keywords as variables!");
-                }
+            //extract the variable name
+            String var = ParsingTools.extractVarFromDef(commentFree);
+            //we need to make sure that there are no keyword collisions
+            if(containsKeywordCollisions(var)){
+                throw new MiMaSyntaxException("Keyword Collision on Line: " + lineNumber + ". Dont use Keywords as variables!");
             }
             return;
         }
 
+        //line is a command
 
+        //if a marker is present we check if it is valid
+        //if not, we remove it
+        if(commentFree.matches("^[a-zA-Z]+: ?[A-Z]+( [0-9]+| [a-zA-Z]+)?$")){
+            //we need to make sure that there are no keyword collisions
+            String marker = commentFree.substring(0,commentFree.indexOf(":"));
+            if(containsKeywordCollisions(marker)){
+                throw new MiMaSyntaxException("Keyword Collision on Line: " + lineNumber + ". Dont use Keywords as variables!");
+            }
+            //the marker is valid so we need to remove it
+            commentFree = commentFree.substring(commentFree.indexOf(":") + 1);
+            commentFree = commentFree.trim();
+        }
+
+        System.out.println(commentFree);
+
+        //No arguments given, needs to match a command
+        if(commentFree.matches("^[A-Z]+ ?$")){
+            //The Instruction does not match any know Instruction without arguments
+            String instr = commentFree.trim();
+            if(!instructionMaster.getCommandList(false).contains(instr)){
+                throw new MiMaSyntaxException("Unknown Command on Line: " + lineNumber + ". Maybe a missing argument?");
+            }
+        } else { //Arguments given
+            //The Instruction dies not match any know Instruction with arguments
+            String instr = commentFree.trim();
+            instr = instr.substring(0,instr.indexOf(" "));
+            if(!instructionMaster.getCommandList(true).contains(instr)){
+                throw new MiMaSyntaxException("Unknown Command on Line: " + lineNumber + ". Maybe an argument too much?");
+            }
+        }
+        //if this stage is reached, the given line of code has the correct syntax
+    }
+
+    /**
+     * Checks for any keyword collisions of the given variable
+     * @param variable The Variable to check for collsions
+     * @return whether the variable is a collision
+     */
+    private boolean containsKeywordCollisions(String variable){
+        //Iterate through a List of all keywords
+        for(String command: instructionMaster.getCommandList()){
+            if(variable.trim().matches("^"+command+"$")){
+                return true;
+            }
+        }
+        //dont forget the var keyword
+        if(variable.matches("var")){
+            return true;
+        }
+        return false;
     }
 
     public String[] attemptParse(String[] linesIn, int offset) throws MiMaParsingException {
@@ -196,7 +241,7 @@ public class MiMaBuilder {
         //Deleting Comments and whitespaces
         for (int i = 0; i < lines.length; i++) {
             lines[i] = lines[i].replaceAll("//.*$", "");
-            lines[i] = lines[i].replaceAll(" ", "");
+            lines[i] = lines[i].replaceAll(" ", ""); //TODO: REMOVE
         }
 
         //marker:ADD2
@@ -204,7 +249,7 @@ public class MiMaBuilder {
         //getting rid of variables
         for (int i = 0; i < lines.length; i++) {
             line = lines[i];
-            if (line.matches(VARIABLEDECLARATION)) {                      //varNAME=2
+            if (line.matches("^var([A-Z]{3,})=[0-9]+(//.*)?$")) {                      //varNAME=2
                 line = line.substring(3);                               //NAME=2
                 tempInt = line.indexOf("=");
                 marker = line.substring(0, tempInt);                     //NAME
@@ -251,6 +296,7 @@ public class MiMaBuilder {
         //if the code still contains markers a MiMaParsingException is thrown
         for (int i = 0; i < lines.length; i++) {
             if (!lines[i].matches("^([a-z]*:)?((" + COMMANDS_WITH_ARGS + "[0-9]+)|" + COMMANDS_NO_ARGS + ")$")) {
+                Debug.sendErr(lines[i]);
                 throw new MiMaParsingException("Incorrrect Usage of Operator at Line" + i);
             }
         }

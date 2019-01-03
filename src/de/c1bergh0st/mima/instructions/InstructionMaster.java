@@ -56,6 +56,24 @@ public class InstructionMaster {
         Debug.sendRaw("Added Instruction: " + instr);
     }
 
+    public LinkedList<String> getCommandList(boolean takesArgs){
+        LinkedList<String> result = new LinkedList<String>();
+        String regex;
+        for(Instruction i : instructions){
+            regex = i.getRegex();
+            if(!result.contains(regex) && (takesArgs == i.takesArgs())){
+                result.add(i.getRegex());
+            }
+        }
+        for(Instruction i : extendedInstructions){
+            regex = i.getRegex();
+            if(!result.contains(regex) && (takesArgs == i.takesArgs())){
+                result.add(i.getRegex());
+            }
+        }
+        return result;
+    }
+
     public LinkedList<String> getCommandList(){
         LinkedList<String> result = new LinkedList<String>();
         String regex;

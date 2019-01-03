@@ -2,6 +2,8 @@ package de.c1bergh0st.mima.parsing;
 
 import de.c1bergh0st.mima.instructions.InstructionMaster;
 
+import java.util.Scanner;
+
 public class ParsingTools {
 
     public static void main(String[] args){
@@ -11,10 +13,19 @@ public class ParsingTools {
         InstructionMaster master = new InstructionMaster();
         master.loadMiMa();
         MiMaBuilder mb = new MiMaBuilder(master);
+        Scanner scan = new Scanner(System.in);
         try{
             mb.validateSyntax("var ADD = 20",10);
         } catch (MiMaSyntaxException e){
             e.printStackTrace();
+        }
+        while(true){
+            try{
+                mb.validateSyntax(scan.nextLine(),0);
+                System.out.println("success");
+            } catch (MiMaSyntaxException e){
+                e.printStackTrace();
+            }
         }
     }
 
