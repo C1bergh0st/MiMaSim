@@ -1,12 +1,8 @@
 package de.c1bergh0st.mima.instructions;
 
 import de.c1bergh0st.debug.Debug;
-import de.c1bergh0st.mima.RegisterMaster;
-import de.c1bergh0st.mima.Speicher;
-import de.c1bergh0st.mima.Steuerwerk;
 import de.c1bergh0st.visual.ParseUtil;
 
-import java.net.PasswordAuthentication;
 import java.util.LinkedList;
 
 public class InstructionMaster {
@@ -56,8 +52,9 @@ public class InstructionMaster {
         Debug.sendRaw("Added Instruction: " + instr);
     }
 
+
     public LinkedList<String> getCommandList(boolean takesArgs){
-        LinkedList<String> result = new LinkedList<String>();
+        LinkedList<String> result = new LinkedList<>();
         String regex;
         for(Instruction i : instructions){
             regex = i.getRegex();
@@ -74,8 +71,8 @@ public class InstructionMaster {
         return result;
     }
 
-    public LinkedList<String> getCommandList(){
-        LinkedList<String> result = new LinkedList<String>();
+    public LinkedList<String> getFullCommandList(){
+        LinkedList<String> result = new LinkedList<>();
         String regex;
         for(Instruction i : instructions){
             regex = i.getRegex();

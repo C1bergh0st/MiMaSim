@@ -9,8 +9,8 @@ public class RegisterMaster {
     private LinkedList<String> nameList;
 
     public RegisterMaster(){
-        nameMap = new HashMap<String, Register>();
-        nameList = new LinkedList<String>();
+        nameMap = new HashMap<>();
+        nameList = new LinkedList<>();
     }
 
     /**
@@ -68,7 +68,7 @@ public class RegisterMaster {
      * @return The List of Keys
      */
     public LinkedList<String> getList(){
-        LinkedList<String> copy = new LinkedList<String>();
+        LinkedList<String> copy = new LinkedList<>();
         for(String s : nameList){
             copy.add(s);
         }

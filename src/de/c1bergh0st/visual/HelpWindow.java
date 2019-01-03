@@ -3,7 +3,6 @@
 package de.c1bergh0st.visual;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class HelpWindow extends JFrame {
     private String info = "TODO: IMPLEMENT";

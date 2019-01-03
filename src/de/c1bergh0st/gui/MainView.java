@@ -5,15 +5,7 @@ import de.c1bergh0st.visual.HelpWindow;
 import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MainView extends JPanel {
     public JButton buildBtn;
@@ -57,10 +49,8 @@ public class MainView extends JPanel {
         mnHelp.add(mntmMiMaDoc);
 
         JMenuItem mntmAbout = new JMenuItem("About");
-        mntmAbout.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                HelpWindow w = new HelpWindow();
-            }
+        mntmAbout.addActionListener(ev -> {
+            HelpWindow w = new HelpWindow();
         });
         mnHelp.add(mntmAbout);
 
@@ -80,19 +70,11 @@ public class MainView extends JPanel {
         bottomBar.add(offsetSpinner );
 
         buildBtn = new JButton("Build");
-        buildBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                contr.build();
-            }
-        });
+        buildBtn.addActionListener(ev -> contr.build());
         bottomBar.add(buildBtn);
 
         disposeBtn = new JButton("Dispose");
-        disposeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                contr.dispose();
-            }
-        });
+        disposeBtn.addActionListener(ev -> contr.dispose());
         bottomBar.add(disposeBtn);
         disposeBtn.setEnabled(false);
 

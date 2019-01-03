@@ -1,9 +1,6 @@
 //Copyright (C) 2018  Philipp Berdesinski
 package de.c1bergh0st.visual;
 
-import de.c1bergh0st.debug.Debug;
-import de.c1bergh0st.mima.Steuerwerk;
-
 /**
  *  Just a Utility Class to convert from Strings to binary and vice versa
  */

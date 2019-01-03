@@ -4,9 +4,6 @@ import de.c1bergh0st.config.Colors;
 import de.c1bergh0st.visual.DialogUtil;
 
 import javax.swing.*;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import java.awt.*;
 
 public class ViewController {
     private static final int REDNESS = 60;

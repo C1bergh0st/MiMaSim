@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 public class ParsingTools {
 
+    @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] args){
         System.out.println("aa//a".indexOf("//"));
         System.out.println(removeComment("ab//cdefg//hijkl//mnop"));
@@ -33,8 +34,7 @@ public class ParsingTools {
         //given Line: "var MARKER: 2(,2)?"
         String shorterLine = line.substring(4);
         int end = shorterLine.indexOf("=");
-        String marker = shorterLine.substring(0,end-1);
-        return marker;
+        return shorterLine.substring(0,end-1);
     }
 
     /**

@@ -83,6 +83,7 @@ public class DataConverter {
      * @param length The length the Binary representation should have
      * @return A Code Representation
      */
+    @SuppressWarnings("StringConcatenationInLoop")
     public static String getBinary(int value, int length) {
         String result = "";
         int temp = value;

@@ -7,7 +7,6 @@ import de.c1bergh0st.mima.Steuerwerk;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 public class BottomBar extends JPanel {
     private final JButton oneStep;
@@ -26,35 +25,29 @@ public class BottomBar extends JPanel {
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
         oneStep = new JButton("Step");
-        oneStep.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mima.step();
-                memEdit.revalidate();
-                registerView.refresh();
-            }
-        } );
+        oneStep.addActionListener(e -> {
+            mima.step();
+            memEdit.revalidate();
+            registerView.refresh();
+        });
         add(oneStep);
 
         start = new JButton("Start");
-        start.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mima.reset();
-                memEdit.revalidate();
-                mima.stepTill(0xFFFFFFF);
-                memEdit.revalidate();
-                registerView.refresh();
-            }
-        } );
+        start.addActionListener(e -> {
+            mima.reset();
+            memEdit.revalidate();
+            mima.stepTill(0xFFFFFFF);
+            memEdit.revalidate();
+            registerView.refresh();
+        });
         add(start);
 
         reset = new JButton("Reset");
-        reset.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mima.reset();
-                memEdit.revalidate();
-                registerView.refresh();
-            }
-        } );
+        reset.addActionListener(e -> {
+            mima.reset();
+            memEdit.revalidate();
+            registerView.refresh();
+        });
         add(reset);
         mima.getSpeicher().lockCurrState();
     }

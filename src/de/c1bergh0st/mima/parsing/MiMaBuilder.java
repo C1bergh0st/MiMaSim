@@ -22,6 +22,7 @@ public class MiMaBuilder {
     }
 
     public Steuerwerk createFromCode(String code, int offset) throws MiMaSyntaxException, MiMaParsingException {
+        long startTime = System.nanoTime();
         //Splitting the Input into Lines
         String[] lines = code.split("\\r?\\n");
 
@@ -45,6 +46,9 @@ public class MiMaBuilder {
 
         mima = new Steuerwerk(instructionMaster);
         mima.getSpeicher().setMem(mem);
+        long elapsedNanoTime = System.nanoTime()-startTime;
+        double elapsedSeconds = (elapsedNanoTime / 1_000_000_000.0);
+        Debug.send("Compilation successful in " + elapsedSeconds +"s");
         return mima;
     }
 
@@ -62,7 +66,7 @@ public class MiMaBuilder {
      * @return  The matching binary code
      */
     public int parseLine(String line) {
-        int result = 0;
+        int result;
         if (line.contains("SKIP")) {
             result = 0xE00000; //opCode 15 : SKIP
         } else if (line.matches("(RAR|NOT|HALT)")) {
@@ -94,6 +98,7 @@ public class MiMaBuilder {
      * @param line the String you want to split
      * @return a split String-array of size 2
      */
+    @SuppressWarnings("StringConcatenationInLoop")
     private String[] splitArgCommand(String line){
         String command = "";
         String value = "";
@@ -104,8 +109,7 @@ public class MiMaBuilder {
                 value += line.charAt(i);
             }
         }
-        String[] result = {command, value};
-        return result;
+        return new String[]{command, value};
     }
 
 
@@ -188,8 +192,6 @@ public class MiMaBuilder {
             commentFree = commentFree.trim();
         }
 
-        System.out.println(commentFree);
-
         //No arguments given, needs to match a command
         if(commentFree.matches("^[A-Z]+ ?$")){
             //The Instruction does not match any know Instruction without arguments
@@ -213,9 +215,10 @@ public class MiMaBuilder {
      * @param variable The Variable to check for collsions
      * @return whether the variable is a collision
      */
+    @SuppressWarnings("RedundantIfStatement")
     private boolean containsKeywordCollisions(String variable){
         //Iterate through a List of all keywords
-        for(String command: instructionMaster.getCommandList()){
+        for(String command: instructionMaster.getFullCommandList()){
             if(variable.trim().matches("^"+command+"$")){
                 return true;
             }
@@ -229,7 +232,7 @@ public class MiMaBuilder {
 
     public String[] attemptParse(String[] linesIn, int offset) throws MiMaParsingException {
         //a map mapping a marker to its line number
-        HashMap<String, Integer> markermap = new HashMap<String, Integer>();
+        HashMap<String, Integer> markermap = new HashMap<>();
         String[] lines = new String[linesIn.length];
         String line;
         int tempInt;

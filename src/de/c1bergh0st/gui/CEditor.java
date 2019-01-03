@@ -80,6 +80,7 @@ public class CEditor extends JScrollPane{
             return lineCount;
         }
         
+        @SuppressWarnings("deprecation")
         @Override
         public Rectangle getLineRect(int line) {
             Element map = textPane.getDocument().getDefaultRootElement();

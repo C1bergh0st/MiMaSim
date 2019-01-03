@@ -6,7 +6,6 @@ package de.c1bergh0st.main;
 import de.c1bergh0st.gui.InputController;
 import de.c1bergh0st.gui.MainView;
 import de.c1bergh0st.gui.ViewController;
-import de.c1bergh0st.mima.Steuerwerk;
 
 import javax.swing.*;
 import java.awt.*;

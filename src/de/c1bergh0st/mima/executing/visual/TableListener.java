@@ -4,7 +4,6 @@
 package de.c1bergh0st.mima.executing.visual;
 
 import de.c1bergh0st.mima.Speicher;
-import de.c1bergh0st.mima.Steuerwerk;
 import de.c1bergh0st.mima.parsing.DataConverter;
 
 import javax.swing.*;
@@ -48,7 +47,7 @@ class TableListener implements TableModelListener {
     /**
      * Forces all Rows to update
      * Mostly Used to ensure Colors match
-     * @param adress
+     * @param adress the line/adress to update
      */
     private void updateRow(int adress){
         forceUpdate(adress,0);

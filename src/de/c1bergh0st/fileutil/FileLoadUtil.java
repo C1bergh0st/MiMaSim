@@ -17,6 +17,7 @@ public class FileLoadUtil {
         showSaveDialog(new JFrame(),"TEäT\n");
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void showSaveDialog(JFrame parent, String programm){
         JFileChooser fileChooser = new JFileChooser();
 
@@ -38,7 +39,7 @@ public class FileLoadUtil {
             }
 
             // save to file
-            PrintWriter writer = null;
+            PrintWriter writer;
             Debug.send(file.getPath());
 
             //if the file doesn't exist we create it

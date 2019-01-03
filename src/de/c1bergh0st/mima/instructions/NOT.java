@@ -1,6 +1,5 @@
 package de.c1bergh0st.mima.instructions;
 
-import de.c1bergh0st.debug.Debug;
 import de.c1bergh0st.mima.RegisterMaster;
 import de.c1bergh0st.mima.Speicher;
 import de.c1bergh0st.mima.Steuerwerk;

@@ -4,7 +4,6 @@
 package de.c1bergh0st.mima;
 
 import de.c1bergh0st.debug.Debug;
-import de.c1bergh0st.mima.instructions.InstructionMaster;
 import de.c1bergh0st.mima.instructions.*;
 import de.c1bergh0st.visual.DialogUtil;
 import de.c1bergh0st.visual.ParseUtil;

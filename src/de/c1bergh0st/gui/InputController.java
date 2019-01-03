@@ -8,7 +8,6 @@ import de.c1bergh0st.mima.parsing.MiMaParsingException;
 import de.c1bergh0st.mima.parsing.MiMaSyntaxException;
 
 import javax.swing.*;
-import javax.swing.text.View;
 
 public class InputController {
     private MiMaBuilder builder;
@@ -27,11 +26,7 @@ public class InputController {
         //load mima
         try {
             currentMiMa = builder.createFromCode(viewContr.getEditorText(),viewContr.getOffset());
-        } catch (MiMaSyntaxException e) {
-            viewContr.showException(e);
-            e.printStackTrace();
-            return;
-        } catch (MiMaParsingException e) {
+        } catch (MiMaSyntaxException | MiMaParsingException e) {
             viewContr.showException(e);
             e.printStackTrace();
             return;

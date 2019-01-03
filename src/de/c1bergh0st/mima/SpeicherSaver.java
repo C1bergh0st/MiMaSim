@@ -21,7 +21,7 @@ public class SpeicherSaver {
 
      */
 
-    public static void saveMemory(int mem[],JFrame parent,String[] comments){
+    public static void saveMemory(int[] mem, JFrame parent, String[] comments){
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("MiMa Memory (.bin)", "bin");
         fileChooser.setFileFilter(filter);
@@ -33,7 +33,7 @@ public class SpeicherSaver {
                 file = new File(file.getPath()+".bin");
             }
             // save to file
-            PrintWriter writer = null;
+            PrintWriter writer;
             Debug.send(file.getPath());
             if(!file.exists()){
                 Debug.send("creating");
@@ -45,9 +45,9 @@ public class SpeicherSaver {
             }
             try {
                 writer = new PrintWriter(file);
-                String adress = "";
-                String value = "";
-                String comment = "";
+                String adress;
+                String value;
+                String comment;
                 for(int i = 0; i < mem.length; i++){
                     adress = String.format("%05X", i);
                     adress = adress.substring(adress.length()-5);
@@ -85,13 +85,13 @@ public class SpeicherSaver {
             try {
                 reader = new BufferedReader(new FileReader(file));
                 String line = reader.readLine();
-                int adress = 0;
-                int value = 0;
-                String comment = "";
+                int adress;
+                int value;
+                String comment;
                 int i = 0;
                 while (line != null && i <= Steuerwerk.MAX_ADRESS) {
                     //If the line given matches the Regex we parse it into the res[]
-                    if(line.matches("^([0-9A-F]{5})-([0-9A-F]{6})(\\{.*\\})?$")){
+                    if(line.matches("^([0-9A-F]{5})-([0-9A-F]{6})(\\{.*})?$")){
                         //Parsing
                         adress = parseSaveLineAdress(line);
                         value = parseSaveLineValue(line);
@@ -125,8 +125,8 @@ public class SpeicherSaver {
     }
 
     private static String parseSaveLineComment(String line){
-        String res = "";
-        if(line.matches("^([0-9A-F]{5})-([0-9A-F]{6})(\\{.*\\})$")){
+        String res;
+        if(line.matches("^([0-9A-F]{5})-([0-9A-F]{6})(\\{.*})$")){
             res = line.substring(line.indexOf('{'));
             res = res.substring(1,res.length()-1);
             return res;

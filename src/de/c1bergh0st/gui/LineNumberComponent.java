@@ -73,7 +73,7 @@ public class LineNumberComponent extends JComponent {
         if (c instanceof JViewport) {
             JViewport view = (JViewport) c;
             Component parent = view.getParent();
-            if (parent != null && parent instanceof JScrollPane) {
+            if (parent instanceof JScrollPane) {
                 JScrollPane scroller = (JScrollPane) view.getParent();
                 dimension = scroller.getViewport().getView().getPreferredSize();
             }
