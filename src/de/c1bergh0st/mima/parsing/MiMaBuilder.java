@@ -34,8 +34,10 @@ public class MiMaBuilder {
 
         //checks each line to match the format
         validateSyntaxFull(lines);
+
         //Parses the Code into Direct Instructions
         String[] parsedLines = attemptParse(lines, offset);
+
         //Parses the Direct Instructions into ByteCode:
         int[] byteCode = generateByteCode(parsedLines);
 
@@ -235,8 +237,8 @@ public class MiMaBuilder {
         HashMap<String, Integer> markermap = new HashMap<>();
         String[] lines = new String[linesIn.length];
         String line;
-        int tempInt;
         String marker;
+        int tempInt;
 
         System.arraycopy(linesIn, 0, lines, 0, linesIn.length);
 
