@@ -7,6 +7,8 @@ import de.c1bergh0st.visual.DialogUtil;
 import de.c1bergh0st.visual.ParseUtil;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Vector;
 
 public class MiMaBuilder {
     private static final String MARKER = "([a-z]*:)";
@@ -233,8 +235,21 @@ public class MiMaBuilder {
     }
 
     public String[] attemptParse(String[] linesIn, int offset) throws MiMaParsingException {
+        /*
+    x    1   Remove Comments
+    x    2   Reduce multiple spaces to one Whitespace
+    x    3.1 map marker definitions to their respective line + offset
+    x    3.2 remove marker definitions
+    x    3.3 check variable definitions for collisions -> throw MiMaParsingException
+    x    4.1 map variables to their adresses
+    x    4.2 OPTIONAL save their initial value
+    x    4.3 replace var definitions with SKIP
+    x    4.4 replace var/marker occurrences with their adresses
+    x    5.  save the initial values at the adress line
+        */
         //a map mapping a marker to its line number
-        HashMap<String, Integer> markermap = new HashMap<>();
+        HashMap<String, Integer> markerMap = new HashMap<>();
+        LinkedList<Integer[]> initialValues = new LinkedList<>();
         String[] lines = new String[linesIn.length];
         String line;
         String marker;
@@ -243,68 +258,124 @@ public class MiMaBuilder {
         System.arraycopy(linesIn, 0, lines, 0, linesIn.length);
 
 
-        //Deleting Comments and whitespaces
+        //1. Deleting Comments and 2. reducing multiple spaces to a single space
         for (int i = 0; i < lines.length; i++) {
             lines[i] = lines[i].replaceAll("//.*$", "");
-            lines[i] = lines[i].replaceAll(" ", ""); //TODO: REMOVE
+            lines[i] = lines[i].replaceAll(" +", " ");
+            lines[i] = lines[i].trim();
         }
 
-        //marker:ADD2
-        //OR varNAME
-        //getting rid of variables
-        for (int i = 0; i < lines.length; i++) {
+        //3.1 Map Marker Definitions to adresses + offset
+        for (int i = 0; i < lines.length; i++){
             line = lines[i];
-            if (line.matches("^var([A-Z]{3,})=[0-9]+(//.*)?$")) {                      //varNAME=2
-                line = line.substring(3);                               //NAME=2
-                tempInt = line.indexOf("=");
-                marker = line.substring(0, tempInt);                     //NAME
-                tempInt = Integer.parseInt(line.substring(tempInt + 1));  //2
-                if (markermap.containsKey(marker)) {
-                    throw new MiMaParsingException("Multiple Variable name at Line: " + i);
+            if (line.matches("^[a-zA-Z]+: ?[A-Z]+( [0-9]+| [a-zA-Z]+)?$")) {
+                //extract marker name
+                int colonIndex = line.indexOf(":");
+                marker = line.substring(0, colonIndex);
+                //if the marker is already in the Map an MiMaParsingException is thrown
+                if(markerMap.containsKey(marker)){
+                    throw new MiMaParsingException("Marker Declaration Name Collision at Line "
+                                                + markerMap.get(marker) + " and Line " + i);
+                }
+                markerMap.put(marker, i + offset);
+            }
+        }
+
+        //3.2 remove Marker Definitions
+        for (int i = 0; i < lines.length; i++){
+            line = lines[i];
+            if (line.matches("^[a-zA-Z]+: ?[A-Z]+( [0-9]+| [a-zA-Z]+)?$")) {
+                int colonIndex = line.indexOf(":");
+                //if there is a space after the colon remove that too
+                if(line.charAt(colonIndex + 1) == ' '){
+                    lines[i] = line.substring(colonIndex + 1);
                 } else {
-                    markermap.put(marker, tempInt);
-                    line = "SKIP";                                      //avoid errors with offsets
+                    lines[i] = line.substring(colonIndex);
                 }
             }
-            lines[i] = line;
+        }
+
+        //3.3 check varialbe Definitions for marker collsisons
+        for (int i = 0; i < lines.length; i++){
+            line = lines[i];
+            if (line.matches(VARIABLEDECLARATION)) {
+                String temp = line.substring(4);
+                int index = line.indexOf(" ");
+                String variableName = temp.substring(0,index);
+                if(markerMap.containsKey(variableName)){
+                    throw new MiMaParsingException("Variable Naming collision. Variable Name at Line " + i
+                                                + " intersects with Marker Name at Line " + markerMap.get(variableName));
+                }
+            }
         }
 
 
-        //mapping markers to lines, deleting markers:
-        for (int i = 0; i < lines.length; i++) {
+        //4.1 map Variables to their adresses and 4.2 OPTIONAL save their inital Value
+        //and 4.3 replace Declaration with SKIP
+        for (int i = 0; i < lines.length; i++){
             line = lines[i];
-            if (line.matches("^([a-z]*:)(.*)$")) {
-                marker = line.substring(0, line.indexOf(":"));
-                if (markermap.containsKey(marker)) {
-                    throw new MiMaParsingException("Multiple Markers at Line: " + i);
+            if (line.matches(VARIABLEDECLARATION)){
+                String temp = line.substring(4);
+                int index = line.indexOf(" ");
+                String variableName = temp.substring(0,index);
+                index = line.indexOf("=");
+                int adress;
+                //Advanced Variable declaration
+                if(line.contains(",")){
+                    String args = line.substring(index + 1);
+                    index = args.indexOf(",");
+                    adress = Integer.parseInt(args.substring(0,index)) - offset;
+                    //save initial Value
+                    int value = Integer.parseInt(args.substring(index).trim());
+                    Integer[] pos = {adress , value};
+                    initialValues.add(pos);
                 } else {
-                    //mapping the marker to its line
-                    markermap.put(marker, i + offset);
-                    //deleting the marker from the source code
-                    lines[i] = line.substring(line.indexOf(":") + 1);
+                    adress = Integer.parseInt(line.substring(index) + 1) - offset;
                 }
+                markerMap.put(variableName,adress);
+                //replace declaration with SKIP
+                lines[i] = "SKIP";
             }
         }
 
-        //replacing all occurrences of markers:
-        for (int i = 0; i < lines.length; i++) {
+        //4.4 replace marker/variable occurrances with their line number
+        for (int i = 0; i < lines.length; i++){
             line = lines[i];
-            for (String key : markermap.keySet()) {
-                if (line.contains(key)) {
-                    line = line.replaceAll(key, Integer.toString(markermap.get(key)));
+            if (line.matches("[A-Z]+ [a-zA-Z]+")){
+                int index = line.indexOf(" ");
+                marker = line.substring(index + 1);
+                //make sure this is not a variable
+                if(markerMap.containsKey(marker)){
+                    int value = markerMap.get(marker);
+                    line = line .substring(0,index + 1) + value;
+                } else{
+                    throw new MiMaParsingException("Variable/Marker at Line " + i + " not recognized");
+                }
+            }
+        }
+
+        for (int i = 0; i < initialValues.size(); i++){
+            int adress = initialValues.get(i)[0];
+            int value = initialValues.get(i)[0];
+            //make sure the array is big enought
+            if(adress > lines.length - offset){
+                if(adress < Steuerwerk.MAX_ADRESS + 1){
+                    String[] newLines = new String[adress+1];
+                    System.arraycopy(lines, 0, newLines, 0, lines.length);
+                    lines = newLines;
+                } else {
+                    throw new MiMaParsingException("Variable Adress too big >" + (Steuerwerk.MAX_ADRESS - offset));
                 }
             }
 
-            lines[i] = line;
+            line = lines[adress];
+            if(!line.equals("") && !line.equals("SKIP")){
+                throw new MiMaParsingException("Variable value at adress " + adress + " would overwrite Code");
+            }
+            lines[adress] = Integer.toString(value);
         }
 
-        //if the code still contains markers a MiMaParsingException is thrown
-        for (int i = 0; i < lines.length; i++) {
-            if (!lines[i].matches("^([a-z]*:)?((" + COMMANDS_WITH_ARGS + "[0-9]+)|" + COMMANDS_NO_ARGS + ")$")) {
-                Debug.sendErr(lines[i]);
-                throw new MiMaParsingException("Incorrrect Usage of Operator at Line" + i);
-            }
-        }
+
         return lines;
     }
 }
