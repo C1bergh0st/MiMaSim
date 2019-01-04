@@ -94,7 +94,7 @@ public class MiMaBuilder {
                 result = i << 20; //Shift the opCode 20 bits to the left
             }
         }
-        return result + ParseUtil.mask20(Integer.parseInt(split[1]));
+        return result + ParseUtil.mask20(Integer.parseInt(split[1].trim()));
     }
 
     /**
@@ -316,7 +316,7 @@ public class MiMaBuilder {
             line = lines[i];
             if (line.matches(VARIABLEDECLARATION)){
                 String temp = line.substring(4);
-                int index = line.indexOf(" ");
+                int index = temp.indexOf(" ");
                 String variableName = temp.substring(0,index);
                 index = line.indexOf("=");
                 int adress;
@@ -330,7 +330,7 @@ public class MiMaBuilder {
                     Integer[] pos = {adress , value};
                     initialValues.add(pos);
                 } else {
-                    adress = Integer.parseInt(line.substring(index) + 1) - offset;
+                    adress = Integer.parseInt(line.substring(index + 1).trim()) - offset;
                 }
                 markerMap.put(variableName,adress);
                 //replace declaration with SKIP
@@ -340,14 +340,14 @@ public class MiMaBuilder {
 
         //4.4 replace marker/variable occurrances with their line number
         for (int i = 0; i < lines.length; i++){
-            line = lines[i];
-            if (line.matches("[A-Z]+ [a-zA-Z]+")){
+            line = lines[i].trim();
+            if (line.matches("^[A-Z]+ [a-zA-Z]+$")){
                 int index = line.indexOf(" ");
                 marker = line.substring(index + 1);
                 //make sure this is not a variable
                 if(markerMap.containsKey(marker)){
                     int value = markerMap.get(marker);
-                    line = line .substring(0,index + 1) + value;
+                    lines[i] = line.substring(0,index + 1) + value;
                 } else{
                     throw new MiMaParsingException("Variable/Marker at Line " + i + " not recognized");
                 }
@@ -373,6 +373,22 @@ public class MiMaBuilder {
                 throw new MiMaParsingException("Variable value at adress " + adress + " would overwrite Code");
             }
             lines[adress] = Integer.toString(value);
+        }
+
+
+        //trim that son of a gun
+        for(int i = 0; i < lines.length; i++){
+            lines[i] = lines[i].trim();
+        }
+
+
+        //final check
+        for (int i = 0; i < lines.length; i++){
+            line = lines[i];
+            if(!line.matches("^[A-Z]+( ?[0-9]+)?$") && !line.matches("[0-9]+")){
+                throw new MiMaParsingException("Line " + i + ":\""+ line +"\" Error after High-level Parsing");
+            }
+
         }
 
 
