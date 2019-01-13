@@ -360,7 +360,7 @@ public class MiMaBuilder {
 
             line = lines[adress];
             if(!(line.equals("0") || line.equals("SKIP"))){
-                throw new MiMaParsingException("Variable value at adress " + adress + " would overwrite Code");
+                throw new MiMaParsingException("Variable value at adress " + (adress + offset) + " would overwrite Code");
             }
             lines[adress] = Integer.toString(value);
         }
