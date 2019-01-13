@@ -1,6 +1,7 @@
 package de.c1bergh0st.mima.instructions;
 
 import de.c1bergh0st.debug.Debug;
+import de.c1bergh0st.mima.parsing.MiMaParsingException;
 import de.c1bergh0st.visual.ParseUtil;
 
 import java.util.LinkedList;
@@ -33,6 +34,67 @@ public class InstructionMaster {
         add(new RAR());
     }
 
+    public int parseSimpleLine(String line){
+        String code = ParseUtil.getFirstWord(line);
+        int result;
+        //Input Sanitisation in new Scope
+        {
+            //TODO OPTIMIZE
+            LinkedList<String> commands = getFullCommandList();
+            //check if we know the command
+            boolean known = false;
+            for(String command : commands){
+                if(!code.equals(command)){
+                    known = true;
+                }
+            }
+            if(!known){
+                throw new IllegalArgumentException("No known Command found");
+            }
+        }
+        //End of Input Sanitisation, Command exists
+        Instruction instruction = getInstrByCommand(code);
+        int argRes;
+
+        //if the instruction takes args we parse that into the argRes argument
+        if(instruction.takesArgs()){
+            //If the Instruction takes Arguments but no Arguments are given an Exception is thrown
+            if(!line.matches("[A-Z]+ [0-9]+")){
+                throw new IllegalArgumentException("Malformed Statement, " + instruction.getSimpleCode() + " takes Arguments");
+            }
+            String arg = line.split(" ")[1];
+            argRes = ParseUtil.mask20(Integer.parseInt(arg));
+            if(instruction.isExtended()){
+                argRes = argRes & 0b000000001111111111111111;
+            }
+        } else{
+            argRes = 0;
+        }
+
+        //merges Argres and OpCode
+        if(instruction.isExtended()){
+            result = 0b111100000000000000000000 + ParseUtil.mask20(instruction.getOpCode()<<16);
+            result += 0b000000001111111111111111 & argRes;
+        } else{
+            result = (instruction.getOpCode() << 20) +ParseUtil.mask20(argRes) ;
+        }
+        return ParseUtil.mask24(result);
+    }
+
+    private Instruction getInstrByCommand(String command){
+        for(Instruction i : instructions){
+            if(i.getSimpleCode().equals(command)){
+                return i;
+            }
+        }
+        for(Instruction i : extendedInstructions){
+            if(i.getSimpleCode().equals(command)){
+                return i;
+            }
+        }
+        throw new AssertionError("Internal Error in InstructionMaster with: \"" + command + "\"");
+    }
+
     public Instruction getInstr(int command){
         byte opCode = (byte)(ParseUtil.mask24(command)>>>20);
         if(opCode == 15){
@@ -52,6 +114,37 @@ public class InstructionMaster {
         Debug.sendRaw("Added Instruction: " + instr);
     }
 
+    public LinkedList<String> getExtCommandList(){
+        LinkedList<String> result = new LinkedList<>();
+        addExtCommandList(result);
+        return result;
+    }
+
+    public LinkedList<String> getCommandList(){
+        LinkedList<String> result = new LinkedList<>();
+        addCommandList(result);
+        return result;
+    }
+
+    private void addCommandList(LinkedList<String> input){
+        String regex;
+        for(Instruction i : instructions){
+            regex = i.getRegex();
+            if(!input.contains(regex)){
+                input.add(i.getRegex());
+            }
+        }
+    }
+
+    private void addExtCommandList(LinkedList<String> input){
+        String regex;
+        for(Instruction i : extendedInstructions){
+            regex = i.getRegex();
+            if(!input.contains(regex)){
+                input.add(i.getRegex());
+            }
+        }
+    }
 
     public LinkedList<String> getCommandList(boolean takesArgs){
         LinkedList<String> result = new LinkedList<>();
@@ -73,20 +166,28 @@ public class InstructionMaster {
 
     public LinkedList<String> getFullCommandList(){
         LinkedList<String> result = new LinkedList<>();
-        String regex;
-        for(Instruction i : instructions){
-            regex = i.getRegex();
-            if(!result.contains(regex)){
-                result.add(i.getRegex());
-            }
-        }
-        for(Instruction i : extendedInstructions){
-            regex = i.getRegex();
-            if(!result.contains(regex)){
-                result.add(i.getRegex());
-            }
-        }
+        addCommandList(result);
+        addExtCommandList(result);
         return result;
+    }
+
+    public int getSkipCode(){
+        if(!getFullCommandList().contains("SKIP")){
+            throw new AssertionError("There is supposed to be at least one SKIP command in the InstructionMaster");
+        }
+        for(Instruction i : instructions){
+            if(i.getSimpleCode().equals("SKIP")){
+                return i.getOpCode()<<4;
+            }
+        }
+
+        for(Instruction i : extendedInstructions){
+            if(i.getSimpleCode().equals("SKIP")){
+                return i.getOpCode();
+            }
+        }
+
+        return 0;
     }
 
     private void internalAddExt(Instruction instr){

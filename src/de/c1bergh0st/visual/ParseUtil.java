@@ -83,6 +83,26 @@ public class ParseUtil {
         return -1;
     }
 
+    /**
+     * Returns all characters up to the first space of the full line if it contains no spaces
+     * @param line The line to exctracte the first word from
+     * @return the word
+     */
+    public static String getFirstWord(String line){
+        if (!line.contains(" ")){
+           return line;
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        char c = line.charAt(i);
+        while(c != ' '){
+            sb.append(c);
+            i++;
+            c = line.charAt(i);
+        }
+        return sb.toString().trim();
+    }
+
 
     /**Masks an integer to be in Range of the MiMa Value format
      * @param i Integer

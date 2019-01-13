@@ -6,9 +6,9 @@ import de.c1bergh0st.mima.instructions.InstructionMaster;
 import de.c1bergh0st.visual.DialogUtil;
 import de.c1bergh0st.visual.ParseUtil;
 
+import java.awt.datatransfer.MimeTypeParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Vector;
 
 public class MiMaBuilder {
     private static final String MARKER = "([a-z]*:)";
@@ -17,6 +17,7 @@ public class MiMaBuilder {
     private static final String VARIABLEDECLARATION = "^var [a-zA-Z]+ = [0-9]+(, ?[0-9]+)?$";
     private Steuerwerk mima;
     private InstructionMaster instructionMaster;
+    private LinkedList<String> warnings;
 
 
     public MiMaBuilder(InstructionMaster instructionMaster) {
@@ -24,6 +25,7 @@ public class MiMaBuilder {
     }
 
     public Steuerwerk createFromCode(String code, int offset) throws MiMaSyntaxException, MiMaParsingException {
+        warnings = new LinkedList<>();
         long startTime = System.nanoTime();
         //Splitting the Input into Lines
         String[] lines = code.split("\\r?\\n");
@@ -35,10 +37,22 @@ public class MiMaBuilder {
         }
 
         //checks each line to match the format
-        validateSyntaxFull(lines);
+        validateFullSyntax(lines);
 
         //Parses the Code into Direct Instructions
         String[] parsedLines = attemptParse(lines, offset);
+
+        String l;
+        for (int i = 0; i < parsedLines.length; i++){
+            l = parsedLines[i];
+            if(l == null){
+                l = "";
+                parsedLines[i] = "";
+            }
+            if(!(l.matches("^[A-Z]+( [0-9]+)?$") || l.matches("^[0-9]*$"))){
+                throw new MiMaParsingException("Simplified Code on Line " + i + " was Wrong: \"" + l + "\"");
+            }
+        }
 
         //Parses the Direct Instructions into ByteCode:
         int[] byteCode = generateByteCode(parsedLines);
@@ -53,13 +67,14 @@ public class MiMaBuilder {
         long elapsedNanoTime = System.nanoTime()-startTime;
         double elapsedSeconds = (elapsedNanoTime / 1_000_000_000.0);
         Debug.send("Compilation successful in " + elapsedSeconds +"s");
+        //TODO: Print warnings
         return mima;
     }
 
-    private int[] generateByteCode(String[] simplified) {
+    private int[] generateByteCode(String[] simplified) throws MiMaParsingException {
         int[] byteCode = new int[simplified.length];
         for (int i = 0; i < simplified.length; i++) {
-            byteCode[i] = parseLine(simplified[i]);
+            byteCode[i] = parseLine(simplified[i], i);
         }
         return byteCode;
     }
@@ -69,68 +84,36 @@ public class MiMaBuilder {
      * @param line the line containing the opCode
      * @return  The matching binary code
      */
-    public int parseLine(String line) {
-        int result;
-        if (line.contains("SKIP")) {
-            result = 0xE00000; //opCode 15 : SKIP
-        } else if (line.matches("(RAR|NOT|HALT)")) {
-            result = parseExtCode(line);
-        } else {
-            result = parseArgCode(line);
-        }
-        return ParseUtil.mask24(result);
-    }
+    public int parseLine(String line, int index) throws MiMaParsingException {
+        line = line.trim();
+        int res;
+        /*
+        0. trim line
+        1. Check for SKIP
+        2. Check for binary
+        3. let InstructionMaster parse the Simplified Line
 
-    /**
-     * Parses a single line of simplified opCodes with Arguments
-     * @param line the line containing the opCode
-     * @return The matching binary code
-     */
-    private int parseArgCode(String line){
-        int result = 0;
-        String[] split = splitArgCommand(line);
-        for(int i = 0; i < Steuerwerk.commandSet.length; i++){
-            if(split[0].contains(Steuerwerk.commandSet[i])){
-                result = i << 20; //Shift the opCode 20 bits to the left
+        */
+        if(line.matches("SKIP")){
+            return instructionMaster.getSkipCode() << 16;
+        }
+
+
+        if(line.matches("^[0-9]$")) {
+            int binary = ParseUtil.mask24(Integer.parseInt(line));
+            if (binary != Integer.parseInt(line)) {
+                addWarning("Overflow occured in Initial Variable Value");
             }
+            return binary;
         }
-        return result + ParseUtil.mask20(Integer.parseInt(split[1].trim()));
-    }
 
-    /**
-     * Splits the given String into digits (index 0) and non-digits (index 1)
-     * @param line the String you want to split
-     * @return a split String-array of size 2
-     */
-    @SuppressWarnings("StringConcatenationInLoop")
-    private String[] splitArgCommand(String line){
-        String command = "";
-        String value = "";
-        for(int i = 0; i < line.length(); i++){
-            if(Character.isLetter(line.charAt(i))){
-                command += line.charAt(i);
-            } else {
-                value += line.charAt(i);
-            }
+        try{
+            res = ParseUtil.mask24(instructionMaster.parseSimpleLine(line));
+        } catch (IllegalArgumentException e){
+            throw new MiMaParsingException("Error: \"" + line + "\" on line " + index + ", " + e.getMessage());
         }
-        return new String[]{command, value};
-    }
 
-
-    /**
-     * Takes a simplified String containing an extended opCode
-     * and returns the matching binary or HALT if an Error occurred
-     * @param line The simplified String containing an extended opCode
-     * @return The matching binary code
-     */
-    private int parseExtCode(String line){
-        int result = 0xF00000;
-        for(int i = 0; i < Steuerwerk.extCommandSet.length; i++){
-            if(line.contains(Steuerwerk.extCommandSet[i])){
-                result += i * 0x010000;
-            }
-        }
-        return result;
+        return res;
     }
 
 
@@ -142,7 +125,7 @@ public class MiMaBuilder {
      * @param lines An Array of Instructions
      * @throws MiMaSyntaxException is thrown if a Line does not conform to the syntax
      */
-    private void validateSyntaxFull(String[] lines) throws MiMaSyntaxException {
+    private void validateFullSyntax(String[] lines) throws MiMaSyntaxException {
         for (int i = 0; i < lines.length; i++) {
             validateSyntax(lines[i], i);
         }
@@ -236,16 +219,16 @@ public class MiMaBuilder {
 
     public String[] attemptParse(String[] linesIn, int offset) throws MiMaParsingException {
         /*
-    x    1   Remove Comments
-    x    2   Reduce multiple spaces to one Whitespace
-    x    3.1 map marker definitions to their respective line + offset
-    x    3.2 remove marker definitions
-    x    3.3 check variable definitions for collisions -> throw MiMaParsingException
-    x    4.1 map variables to their adresses
-    x    4.2 OPTIONAL save their initial value
-    x    4.3 replace var definitions with SKIP
-    x    4.4 replace var/marker occurrences with their adresses
-    x    5.  save the initial values at the adress line
+        1   Remove Comments
+        2   Reduce multiple spaces to one Whitespace
+        3.1 map marker definitions to their respective line + offset
+        3.2 remove marker definitions
+        3.3 check variable definitions for collisions -> throw MiMaParsingException
+        4.1 map variables to their adresses
+        4.2 OPTIONAL save their initial value
+        4.3 replace var definitions with SKIP
+        4.4 replace var/marker occurrences with their adresses
+        5.  save the initial values at the adress line
         */
         //a map mapping a marker to its line number
         HashMap<String, Integer> markerMap = new HashMap<>();
@@ -324,9 +307,9 @@ public class MiMaBuilder {
                 if(line.contains(",")){
                     String args = line.substring(index + 1);
                     index = args.indexOf(",");
-                    adress = Integer.parseInt(args.substring(0,index)) - offset;
+                    adress = Integer.parseInt(args.substring(0,index).trim()) - offset;
                     //save initial Value
-                    int value = Integer.parseInt(args.substring(index).trim());
+                    int value = Integer.parseInt(args.substring(index + 1).trim());
                     Integer[] pos = {adress , value};
                     initialValues.add(pos);
                 } else {
@@ -356,12 +339,19 @@ public class MiMaBuilder {
 
         for (int i = 0; i < initialValues.size(); i++){
             int adress = initialValues.get(i)[0];
-            int value = initialValues.get(i)[0];
+            int value = initialValues.get(i)[1];
             //make sure the array is big enought
-            if(adress > lines.length - offset){
+            if(adress > lines.length - (offset + 1)){
                 if(adress < Steuerwerk.MAX_ADRESS + 1){
                     String[] newLines = new String[adress+1];
                     System.arraycopy(lines, 0, newLines, 0, lines.length);
+                    for(int x = 0; x < newLines.length; x++){
+                        if(x < lines.length){
+                            newLines[x] = lines[x];
+                        } else {
+                            newLines[x] = "0";
+                        }
+                    }
                     lines = newLines;
                 } else {
                     throw new MiMaParsingException("Variable Adress too big >" + (Steuerwerk.MAX_ADRESS - offset));
@@ -369,14 +359,14 @@ public class MiMaBuilder {
             }
 
             line = lines[adress];
-            if(!line.equals("") && !line.equals("SKIP")){
+            if(!(line.equals("0") || line.equals("SKIP"))){
                 throw new MiMaParsingException("Variable value at adress " + adress + " would overwrite Code");
             }
             lines[adress] = Integer.toString(value);
         }
 
 
-        //trim that son of a gun
+        //trim that son of a gun & remove empty
         for(int i = 0; i < lines.length; i++){
             lines[i] = lines[i].trim();
         }
@@ -393,5 +383,11 @@ public class MiMaBuilder {
 
 
         return lines;
+    }
+
+    private void addWarning(String s){
+        if(!(warnings == null)){
+            warnings.add(s);
+        }
     }
 }
