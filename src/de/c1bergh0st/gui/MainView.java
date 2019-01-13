@@ -34,9 +34,15 @@ public class MainView extends JPanel {
         menuBar.add(mnFile);
 
         JMenuItem mntmSave = new JMenuItem("Save");
+        mntmSave.addActionListener(ev -> {
+            contr.save();
+        });
         mnFile.add(mntmSave);
 
         JMenuItem mntmLoad = new JMenuItem("Load");
+        mntmLoad.addActionListener(ev -> {
+            contr.load();
+        });
         mnFile.add(mntmLoad);
 
         JMenu mnEdit = new JMenu("Edit");

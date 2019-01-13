@@ -23,6 +23,7 @@ public class Main {
         MainView view = new MainView(new InputController(viewController));
         frame.add(view);
         viewController.setMainView(view);
+        viewController.setFrame(frame);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(1600,900));
         frame.setVisible(true);

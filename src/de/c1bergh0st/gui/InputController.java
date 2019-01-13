@@ -1,5 +1,6 @@
 package de.c1bergh0st.gui;
 
+import de.c1bergh0st.fileutil.FileLoadUtil;
 import de.c1bergh0st.mima.Steuerwerk;
 import de.c1bergh0st.mima.executing.visual.MiMaPanel;
 import de.c1bergh0st.mima.instructions.InstructionMaster;
@@ -20,6 +21,20 @@ public class InputController {
         InstructionMaster instructionMaster = new InstructionMaster();
         instructionMaster.loadMiMa();
         this.builder = new MiMaBuilder(instructionMaster);
+    }
+
+    public void save(){
+        FileLoadUtil.showSaveDialog(viewContr.getFrame(),viewContr.getEditorText());
+    }
+
+    public void load(){
+        dispose();
+        String data = FileLoadUtil.showLoadDialog(viewContr.getFrame());
+        if(!data.equals("#")){
+            viewContr.setEditorText(data);
+        } else {
+            //No File was Selected
+        }
     }
     
     public void build(){

@@ -8,6 +8,7 @@ import javax.swing.*;
 public class ViewController {
     private static final int REDNESS = 60;
     private MainView mainView;
+    private JFrame frame;
 
     public ViewController(){
 
@@ -26,6 +27,13 @@ public class ViewController {
         return mainView.editor.getText();
     }
 
+    public JFrame getFrame(){
+        return frame;
+    }
+
+    public void setFrame(JFrame frame){
+        this.frame = frame;
+    }
 
 
     public void setRightPanel(JComponent input){

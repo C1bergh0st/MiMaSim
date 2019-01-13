@@ -99,7 +99,7 @@ public class MiMaBuilder {
         }
 
 
-        if(line.matches("^[0-9]$")) {
+        if(line.matches("^[0-9]+$")) {
             int binary = ParseUtil.mask24(Integer.parseInt(line));
             if (binary != Integer.parseInt(line)) {
                 addWarning("Overflow occured in Initial Variable Value");
@@ -189,8 +189,13 @@ public class MiMaBuilder {
         } else { //Arguments given
             //The Instruction dies not match any know Instruction with arguments
             String instr = commentFree.trim();
-            instr = instr.substring(0,instr.indexOf(" "));
+            if(instr.contains(" ")){
+                instr = instr.substring(0,instr.indexOf(" "));
+            }
             if(!instructionMaster.getCommandList(true).contains(instr)){
+                if(line.equals("")){
+                    return;
+                }
                 throw new MiMaSyntaxException("Unknown Command on Line: " + lineNumber + ". Maybe an argument too much?");
             }
         }
@@ -369,6 +374,9 @@ public class MiMaBuilder {
         //trim that son of a gun & remove empty
         for(int i = 0; i < lines.length; i++){
             lines[i] = lines[i].trim();
+            if(lines[i].equals("")){
+                lines[i] = "LDC 0";
+            }
         }
 
 

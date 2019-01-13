@@ -91,6 +91,10 @@ public class CEditor extends JScrollPane{
             }catch(BadLocationException e){
                 e.printStackTrace();
                 return new Rectangle();
+            } catch (NullPointerException e){
+                //Error appeares when line wrapping occures
+                textPane.repaint();
+                return new Rectangle();
             }
         }
     }
