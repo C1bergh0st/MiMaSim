@@ -1,0 +1,25 @@
+JMP 10 //CALCULATES THE 30 Fibonachi numbers and saves them at adress 30-60
+var ONE = 1, 1
+var PREV = 2, 1
+var PREVPREV = 3, 0
+var CURR = 4, 0
+var COUNT = 5, 16777185
+var ADDR = 6, 30
+
+loop: LDC 0 //STARTLOOP
+ADD PREV     //curr = prev + prevprev
+ADD PREVPREV
+STV CURR
+STIV ADDR //mem[<addr>] = curr;
+LDV ADDR	//ADDR++;
+ADD ONE
+STV ADDR
+LDV PREV // prevprev = prev
+STV PREVPREV
+LDV CURR	// prev = curr
+STV PREV
+LDV COUNT //ENDLOOP
+ADD ONE
+STV COUNT
+JMN loop //Ends if Count is positive
+HALT
