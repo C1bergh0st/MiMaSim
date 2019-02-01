@@ -3,6 +3,7 @@
 // The Copyright outlined in the File LICENSE applies
 package de.c1bergh0st.main;
 
+import de.c1bergh0st.debug.Debug;
 import de.c1bergh0st.gui.InputController;
 import de.c1bergh0st.gui.MainView;
 import de.c1bergh0st.gui.ViewController;
@@ -13,11 +14,17 @@ import java.awt.*;
 public class Main {
 
     public static void main(String[] args) {
+
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
+            Debug.send("L&F loaded sucessfully");
         } catch (Exception e) {
+            e.printStackTrace();
             //Bad Habit but no one cares if this fails its just E S T H E T I C S
         }
+
+
         JFrame frame = new JFrame("MiMa_II");
         ViewController viewController = new ViewController();
         MainView view = new MainView(new InputController(viewController));

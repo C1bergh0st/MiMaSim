@@ -24,13 +24,13 @@ public class Debug {
         String type;
         switch (level){
             case 0:
-                type = "Error :";
+                type = "Error: ";
                 break;
             case 1:
-                type = "SEVERE Error :";
+                type = "SEVERE Error: ";
                 break;
             default:
-                type = "FATAL ERROR :";
+                type = "FATAL ERROR: ";
                 break;
         }
         System.out.println(type+errormessage);
