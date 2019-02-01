@@ -6,6 +6,7 @@ package de.c1bergh0st.mima.executing.visual;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import de.c1bergh0st.config.Colors;
 import de.c1bergh0st.mima.*;
 
 import java.awt.*;
@@ -62,13 +63,17 @@ public class MemoryEditor{
                         isSelected, hasFocus, row, column);
 
                 if (row == mima.getNextAdress()) {
-                    setBackground(Color.GREEN);
+                    setBackground(Colors.MIMA_TABLE_NEXT_EXECUTION);
+                    setForeground(Color.BLACK);
                 } else if(row == mima.getLastAdress()){
-                    setBackground(Color.ORANGE);
+                    setBackground(Colors.MIMA_TABLE_EXECUTED);
+                    setForeground(Color.BLACK);
                 } else if(row == mima.getLastChange()){
-                    setBackground(new Color(150,150,255));
+                    setBackground(Colors.MIMA_TABLE_LAST_MEM_CALL);
+                    setForeground(Color.BLACK);
                 } else {
-                    setBackground(Color.WHITE);
+                    setBackground(Colors.MIMA_TABLE_DEFAULT);
+                    setForeground(Colors.DEFAULT_COLOR);
                 }
                 return this;
             }
