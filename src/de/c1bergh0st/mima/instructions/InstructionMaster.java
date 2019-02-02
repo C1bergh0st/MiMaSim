@@ -29,6 +29,8 @@ public class InstructionMaster {
         add(new JMN());
         add(new LDIV());
         add(new STIV());
+        add(new JMS());
+        add(new JIND());
         add(new HALT());
         add(new NOT());
         add(new RAR());

@@ -13,13 +13,4 @@ public class Colors {
 
     public static Color DEFAULT_COLOR = new Color(184,180,177);
 
-
-    public static Color SYNTAX_COMMANDARG = new Color(0,0,0);
-    public static Color SYNTAX_COMMANDNOARG = new Color(0,0,0);
-    public static Color SYNTAX_NUMBER = new Color(0,0,0);
-    public static Color SYNTAX_VARIABLE = new Color(0,0,0);
-    public static Color SYNTAX_MARKER = new Color(0,0,0);
-    public static Color SYNTAX_KEYWORD = new Color(0,0,0);
-    public static Color SYNTAX_DEFAULT = new Color(0,0,0);
-
 }

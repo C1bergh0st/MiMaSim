@@ -44,11 +44,11 @@ public class DataConverter {
     public static String getCodeRepr(int value) {
         String result;
         byte firstByte = (byte) (ParseUtil.mask24(value) >>> 20);
-        if (firstByte >= 0 && firstByte <= 11) {
+        if (firstByte >= 0 && firstByte <= 13) {
             result = Steuerwerk.commandSet[firstByte];
             result += " ";
             result += getSignRepr(ParseUtil.mask20(value));
-        } else if (firstByte >= 12 && firstByte <= 14) {
+        } else if (firstByte == 14) {
             result = "SKIP";
         } else if (firstByte == 15) {
             byte secondByte = (byte) (ParseUtil.mask20(value) >>> 16);

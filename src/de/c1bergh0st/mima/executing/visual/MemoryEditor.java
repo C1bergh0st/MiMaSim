@@ -23,8 +23,9 @@ public class MemoryEditor{
     public MemoryEditor(Speicher speicher, Steuerwerk mima){
         this.mima = mima;
         //How much of the Memory should be shown
-        shownLength = 400;
-        //int shownLength = 1048576;
+        //shownLength = 400;
+        //shownLength = 1048576;
+        shownLength = 10000;
         String[] cols = {"Adress", "Binary", "\"Code\"", "Decimal","Comments"};
         data = new String[shownLength][cols.length];
 

@@ -312,13 +312,13 @@ public class MiMaBuilder {
                 if(line.contains(",")){
                     String args = line.substring(index + 1);
                     index = args.indexOf(",");
-                    adress = Integer.parseInt(args.substring(0,index).trim()) - offset;
+                    adress = Integer.parseInt(args.substring(0,index).trim()) + offset;
                     //save initial Value
                     int value = Integer.parseInt(args.substring(index + 1).trim());
                     Integer[] pos = {adress , value};
                     initialValues.add(pos);
                 } else {
-                    adress = Integer.parseInt(line.substring(index + 1).trim()) - offset;
+                    adress = Integer.parseInt(line.substring(index + 1).trim()) + offset;
                 }
                 markerMap.put(variableName,adress);
                 //replace declaration with SKIP

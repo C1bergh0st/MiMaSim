@@ -3,6 +3,9 @@ package de.c1bergh0st.gui;
 import de.c1bergh0st.visual.HelpWindow;
 
 import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.*;
 import javax.swing.text.StyledDocument;
@@ -45,14 +48,39 @@ public class MainView extends JPanel {
         });
         mnFile.add(mntmLoad);
 
-        JMenu mnEdit = new JMenu("Edit");
-        menuBar.add(mnEdit);
-
         JMenu mnHelp = new JMenu("Help");
         menuBar.add(mnHelp);
 
         JMenuItem mntmMiMaDoc = new JMenuItem("Mima Documentation");
+        mntmMiMaDoc.addActionListener(ev -> {
+            //If possible, open the Link
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    Desktop.getDesktop().browse(new URI("http://ti.ira.uka.de/Visualisierungen/Mima/mima-aufgaben.pdf"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         mnHelp.add(mntmMiMaDoc);
+
+
+        JMenuItem mntmDonate = new JMenuItem("Donate");
+        mntmDonate.addActionListener(ev -> {
+            //If possible, open the Link
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    Desktop.getDesktop().browse(new URI("https://www.paypal.me/c1bergh0st"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        mnHelp.add(mntmDonate);
 
         JMenuItem mntmAbout = new JMenuItem("About");
         mntmAbout.addActionListener(ev -> {
