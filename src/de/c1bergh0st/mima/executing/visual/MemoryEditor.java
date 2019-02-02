@@ -50,7 +50,7 @@ public class MemoryEditor{
         table.getColumnModel().getColumn(1).setPreferredWidth(200);
         table.getColumnModel().getColumn(2).setPreferredWidth(90);
         table.getColumnModel().getColumn(3).setPreferredWidth(90);
-        table.getColumnModel().getColumn(4).setPreferredWidth(200);
+        table.getColumnModel().getColumn(4).setPreferredWidth(0);
 
         //Colorcoding rows
         table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
