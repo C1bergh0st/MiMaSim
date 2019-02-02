@@ -10,7 +10,7 @@ public class MiMaPanel extends JPanel {
     public MiMaPanel(Steuerwerk mima){
         super();
         System.out.println("Initializing MiMa Runtime GUI");
-        MemoryEditor memEdit = new MemoryEditor(mima.getSpeicher(),mima);
+        MemoryEditor memEdit = new MemoryEditor(mima.getSpeicher(),mima,1000);
         RegisterView regView = new RegisterView(mima);
 
 

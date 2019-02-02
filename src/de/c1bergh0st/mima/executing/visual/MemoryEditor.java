@@ -20,12 +20,12 @@ public class MemoryEditor{
     private final String[][] data;
     private int shownLength;
 
-    public MemoryEditor(Speicher speicher, Steuerwerk mima){
+    public MemoryEditor(Speicher speicher, Steuerwerk mima, int length){
         this.mima = mima;
         //How much of the Memory should be shown
         //shownLength = 400;
         //shownLength = 1048576;
-        shownLength = 10000;
+        shownLength = length;
         String[] cols = {"Adress", "Binary", "\"Code\"", "Decimal","Comments"};
         data = new String[shownLength][cols.length];
 
