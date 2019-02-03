@@ -11,10 +11,6 @@ import java.io.*;
 public class FileLoadUtil {
 
 
-    public static void main(String[] args){
-        showSaveDialog(new JFrame(),"TEäT\n");
-    }
-
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void showSaveDialog(JFrame parent, String programm){
         JFileChooser fileChooser = new JFileChooser();

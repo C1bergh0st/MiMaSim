@@ -193,7 +193,7 @@ public class MiMaBuilder {
                 instr = instr.substring(0,instr.indexOf(" "));
             }
             if(!instructionMaster.getCommandList(true).contains(instr)){
-                if(line.equals("")){
+                if(line.matches("^(//.*)?$")){
                     return;
                 }
                 throw new MiMaSyntaxException("Unknown Command on Line: " + lineNumber + ". Maybe an argument too much?");

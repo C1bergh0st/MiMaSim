@@ -15,6 +15,42 @@ import javax.swing.text.Utilities;
 public class CEditor extends JScrollPane{
     private static final long serialVersionUID = 5449228765795411824L;
 
+    private static final String SAMPLEPROGRAMM = "JMP 18\n" +
+            "//Variable Declaration is done in two Ways:\n" +
+            "var VARIABLE = 1\n" +
+            "var VARIABLETWO = 2, 3\n" +
+            "//The second Declaration also initializes adress 2 to a value of 3\n" +
+            "//Comments are obviusly this\n" +
+            "//IF you need help understanding the instruction-set of the MiMa\n" +
+            "//use Help -> MiMa Documentation\n" +
+            "//The Following Programm generates the first 20 fibonacchi numbers\n" +
+            "//And saves them to adresses 40 to 59\n" +
+            "\n" +
+            "var ONE = 11, 1\n" +
+            "var PREV = 12, 1\n" +
+            "var PREVPREV = 13, 0\n" +
+            "var CURR = 14, 0\n" +
+            "var COUNT = 15, 16777196\n" +
+            "var ADDR = 16, 40\n" +
+            "\n" +
+            "loop: LDC 0 //STARTLOOP\n" +
+            "ADD PREV     //curr = prev + prevprev\n" +
+            "ADD PREVPREV\n" +
+            "STV CURR\n" +
+            "STIV ADDR //mem[<addr>] = curr;\n" +
+            "LDV ADDR\t//ADDR++;\n" +
+            "ADD ONE\n" +
+            "STV ADDR\n" +
+            "LDV PREV // prevprev = prev\n" +
+            "STV PREVPREV\n" +
+            "LDV CURR\t// prev = curr\n" +
+            "STV PREV\n" +
+            "LDV COUNT //ENDLOOP\n" +
+            "ADD ONE\n" +
+            "STV COUNT\n" +
+            "JMN loop //Ends if Count is positive\n" +
+            "HALT";
+
     public JTextPane textPane;
     private LineNumberModelImpl lineNumberModel;
     private LineNumberComponent lineNumberComponent;
@@ -45,15 +81,7 @@ public class CEditor extends JScrollPane{
             }
         });
         
-        this.textPane.setText("var MINUSONE = 20 //Simple Programm to check some but not all Commands\n" +
-                "LDC 0\n" +
-                "NOT\n" +
-                "STV MINUSONE\n" +
-                "LDC 10\n" +
-                "loop: JMN end\n" +
-                "ADD MINUSONE\n" +
-                "JMP loop\n" +
-                "end: HALT");
+        this.textPane.setText(SAMPLEPROGRAMM);
         
     }
 
