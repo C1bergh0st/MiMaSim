@@ -14,6 +14,9 @@ Sorted by what i consider "useability":
 Very good Implementation:
 [Mima](https://github.com/weisJ/Mima)
 
+Detailed Implementation:
+[mimaFPGA](https://github.com/mkiesinger/mimaFPGA)
+
 UI-based Simulator with nice Visualization: 
 [MiMaSimu](https://github.com/Indidev/MiMaSimu)
 
