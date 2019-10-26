@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        try {
+        /*try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
@@ -27,7 +27,11 @@ public class Main {
             Colors.EDITOR_DISABLED = new Color(255,200,200);
             Colors.EDITOR_ENABLED = Color.WHITE;
             //Bad Habit but no one cares if this fails its just E S T H E T I C S
-        }
+        }*/
+        Colors.DEFAULT_COLOR = Color.BLACK;
+        Colors.EDITOR_DISABLED = new Color(255,200,200);
+        Colors.EDITOR_ENABLED = Color.WHITE;
+        Colors.MIMA_TABLE_DEFAULT = Color.WHITE;
 
 
         JFrame frame = new JFrame("MiMa_II");
